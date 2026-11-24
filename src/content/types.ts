@@ -87,6 +87,32 @@ export interface ChoiceStep {
   playwrightSandbox?: { code: string; startUrl?: string; loggedIn?: boolean; build?: SkyBug[] }
   /** show the load-test lab with this k6 script so the learner can run it and read the results */
   perfSandbox?: { code: string; build?: PerfBug[] }
+  /** show the Python lab with this code (and data files) so the learner can run it before answering */
+  pythonSandbox?: { code: string; files?: Record<string, string> }
+  successLine?: T
+}
+
+/** Write real Python (it runs in the browser with Pyodide). Graded on output, hidden checks and hidden data. */
+export interface PythonStep {
+  kind: 'python'
+  prompt: T
+  starter: string
+  /** a correct program, used by the content checker (never shown) */
+  solution: string
+  /** files the program can open, by path (e.g. 'data/orders.csv'), shown above the editor */
+  files?: Record<string, string>
+  /** exact printed lines (trailing spaces ignored) */
+  output?: string[]
+  /** text the output must contain */
+  outputIncludes?: string[]
+  /** Python expressions evaluated after the program, in its variables; each must be true */
+  checks?: { expr: string; message: T }[]
+  /** the same code is re-run on hidden data (files replaced); it must still be right */
+  variants?: { label: T; files: Record<string, string>; output?: string[]; outputIncludes?: string[]; checks?: { expr: string; message: T }[] }[]
+  mustUse?: { pattern: string; message: T }[]
+  mustNotUse?: { pattern: string; message: T }[]
+  starterPasses?: boolean
+  hints: T[]
   successLine?: T
 }
 
@@ -206,7 +232,7 @@ export interface TestStep {
   successLine?: T
 }
 
-export type TaskStep = SqlStep | ChoiceStep | ApiStep | TestStep | SeleniumStep | PlaywrightStep | PerfStep
+export type TaskStep = SqlStep | ChoiceStep | ApiStep | TestStep | SeleniumStep | PlaywrightStep | PerfStep | PythonStep
 
 export interface ExamQ {
   q: T
@@ -249,7 +275,7 @@ export interface Act {
   title: T
   client: string
   domain: T
-  building: 'hq' | 'shop' | 'warehouse' | 'bank' | 'delivery' | 'payments' | 'clinic' | 'lab' | 'airline' | 'hangar' | 'arena' | 'stage' | 'pipeline'
+  building: 'hq' | 'shop' | 'warehouse' | 'bank' | 'delivery' | 'payments' | 'clinic' | 'lab' | 'airline' | 'hangar' | 'arena' | 'stage' | 'pipeline' | 'chai' | 'mandi' | 'lake' | 'spark' | 'lambda' | 'glue' | 'dwh' | 'devhq'
   rank: string
   level?: Level
   lessons: Lesson[]

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRef, useState } from 'react'
-import { acts, actUnlocked, allLessons, incidents, isUnlocked, lessonById, trackLessons, trackOf, tracks, type TrackId } from '../content/index.ts'
+import { acts, actUnlocked, incidents, isUnlocked, lessonById, startTrackOf, trackLessons, trackOf, tracks, worldOf, worlds, type TrackId } from '../content/index.ts'
 import type { Act } from '../content/types.ts'
 import { Gremlin, Portrait } from '../components/Portrait.tsx'
 import { TrailPath, useNodeCenters } from '../components/Trail.tsx'
@@ -23,6 +23,14 @@ export const PLOTS: Record<Act['building'], { icon: string }> = {
   arena: { icon: '🏟️' },
   stage: { icon: '🎤' },
   pipeline: { icon: '🛠️' },
+  chai: { icon: '☕' },
+  mandi: { icon: '🧺' },
+  lake: { icon: '🪣' },
+  lambda: { icon: 'λ' },
+  spark: { icon: '✨' },
+  glue: { icon: '🧩' },
+  dwh: { icon: '🏛️' },
+  devhq: { icon: '💻' },
 }
 
 const LEVEL = { basic: { en: 'Foundations', mr: 'पाया' }, intermediate: { en: 'Intermediate', mr: 'मध्यम' }, advanced: { en: 'Advanced', mr: 'प्रगत' } } as const
@@ -32,7 +40,8 @@ let rememberedAct: string | null = null
 
 export function CityMap({ api, onOpenLesson, onOpenIncident }: { api: ProgressApi; onOpenLesson: (id: string) => void; onOpenIncident: (id: string) => void }) {
   const { progress } = api
-  const [openAct, setOpenActState] = useState<string | null>(rememberedAct)
+  const actWorld = (id: string | null) => (id ? tracks.find((t) => t.acts.includes(id))?.world : undefined)
+  const [openAct, setOpenActState] = useState<string | null>(actWorld(rememberedAct) === (progress.world ?? 'qa') ? rememberedAct : null)
   const [archive, setArchive] = useState(false)
   const setOpenAct = (id: string | null) => {
     rememberedAct = id
@@ -40,13 +49,17 @@ export function CityMap({ api, onOpenLesson, onOpenIncident }: { api: ProgressAp
     window.scrollTo({ top: 0 })
   }
   const act = acts.find((a) => a.id === openAct)
-  const doneTotal = allLessons.filter((l) => progress.completed[l.id]).length
+  const world = progress.world ?? 'qa'
+  const worldInfo = worlds.find((w) => w.id === world)!
+  const worldTracks = tracks.filter((t) => t.world === world)
+  const worldLessons = worldTracks.flatMap((t) => trackLessons(t.id))
+  const doneTotal = worldLessons.filter((l) => progress.completed[l.id]).length
 
   // "Continue": the next level in the track played most recently.
-  const last = Object.entries(progress.completed).sort((a, b) => b[1].at - a[1].at)[0]?.[0]
-  const lastTrack: TrackId = last ? trackOf(last) : 'start'
+  const lastInWorld = Object.entries(progress.completed).filter(([id]) => worldOf(trackOf(id)) === world).sort((a, b) => b[1].at - a[1].at)[0]?.[0]
+  const lastTrack: TrackId = lastInWorld ? trackOf(lastInWorld) : startTrackOf(world)
   const nextIn = (t: TrackId) => trackLessons(t).find((l) => !progress.completed[l.id] && isUnlocked(l.id, progress.completed))
-  const next = nextIn(lastTrack) ?? tracks.map((t) => nextIn(t.id)).find(Boolean)
+  const next = nextIn(lastTrack) ?? worldTracks.map((t) => nextIn(t.id)).find(Boolean)
   const nextAct = next ? acts.find((a) => a.lessons.some((l) => l.id === next.id)) : undefined
 
   if (act) {
@@ -64,12 +77,14 @@ export function CityMap({ api, onOpenLesson, onOpenIncident }: { api: ProgressAp
       <section className="map-intro">
         <div>
           <div className="eyebrow"><L en="Quest map" mr="क्वेस्ट नकाशा" /></div>
-          <h1 className="map-title">Your QA career</h1>
-          <p lang="mr" className="bi-mr">तुमचा QA करिअर मार्ग</p>
+          <h1 className="map-title">
+            <span aria-hidden>{worldInfo.icon}</span> {worldInfo.heading.en}
+          </h1>
+          <p lang="mr" className="bi-mr">{worldInfo.heading.mr}</p>
         </div>
         <div className="map-gremlin">
           <Gremlin size={52} />
-          <div className="taunt mono">{doneTotal < 7 ? '>> your city looks fragile. ⌁' : doneTotal < 20 ? '>> clean data? not for long. ⌁' : doneTotal < 35 ? '>> i live in your APIs now. ⌁' : doneTotal < 55 ? '>> fine. see you in selenium. ⌁' : doneTotal < 70 ? '>> my flights never land. ⌁' : '>> 10am flash sale. bring a bigger server. ⌁'}</div>
+          <div className="taunt mono">{world === 'data' ? (doneTotal < 3 ? '>> your pipelines leak. ⌁' : doneTotal < 10 ? '>> i put nulls in your csv. ⌁' : '>> wait till you meet a billion rows. ⌁') : doneTotal < 7 ? '>> your city looks fragile. ⌁' : doneTotal < 20 ? '>> clean data? not for long. ⌁' : doneTotal < 35 ? '>> i live in your APIs now. ⌁' : doneTotal < 55 ? '>> fine. see you in selenium. ⌁' : doneTotal < 70 ? '>> my flights never land. ⌁' : '>> 10am flash sale. bring a bigger server. ⌁'}</div>
         </div>
       </section>
 
@@ -102,7 +117,7 @@ export function CityMap({ api, onOpenLesson, onOpenIncident }: { api: ProgressAp
       )}
 
       <div className="lanes">
-        {tracks.map((t, ti) => (
+        {worldTracks.map((t, ti) => (
           <Lane key={t.id} trackId={t.id} index={ti} api={api} onOpenAct={setOpenAct} onArchive={() => setArchive(true)} />
         ))}
       </div>
@@ -147,12 +162,12 @@ function Lane({ trackId, index, api, onOpenAct, onArchive }: { trackId: TrackId;
   const lessons = trackLessons(t.id)
   const done = lessons.filter((l) => progress.completed[l.id]).length
   const laneActs = t.acts.map((id) => acts.find((x) => x.id === id)!)
-  const prologueDone = trackLessons('start').every((l) => progress.completed[l.id])
+  const prologueDone = trackLessons(startTrackOf(t.world)).every((l) => progress.completed[l.id])
   const road = useRef<HTMLDivElement>(null)
   const nodeCount = laneActs.length + (t.id === 'start' ? 1 : 0)
   const { pts, size, setNode } = useNodeCenters(road, nodeCount, [progress.marathi])
   // the avatar stands on the first unfinished building of a started track
-  const started = done > 0 || (t.id === 'start' && !prologueDone)
+  const started = done > 0 || (t.id === startTrackOf(t.world) && !prologueDone)
   const hereIdx = laneActs.findIndex((a) => a.lessons.some((l) => !progress.completed[l.id]))
   const finishedActs = laneActs.filter((a) => a.lessons.length > 0 && a.lessons.every((l) => progress.completed[l.id])).length
   const walked = hereIdx === -1 ? laneActs.length - 1 : hereIdx
@@ -184,7 +199,7 @@ function Lane({ trackId, index, api, onOpenAct, onArchive }: { trackId: TrackId;
           const finished = a.lessons.length > 0 && a.lessons.every((l) => progress.completed[l.id])
           const count = a.lessons.filter((l) => progress.completed[l.id]).length
           const stars = a.lessons.reduce((s, l) => s + (progress.completed[l.id]?.stars ?? 0), 0)
-          const lockText = !a.available ? 'Coming soon' : !prologueDone && t.id !== 'start' ? 'Finish the prologue to unlock' : 'Finish the previous building to unlock'
+          const lockText = !a.available ? 'Coming soon' : !prologueDone && t.id !== startTrackOf(t.world) ? 'Finish the prologue to unlock' : 'Finish the previous building to unlock'
           const here = started && idx === hereIdx && unlocked
           return (
             <motion.button

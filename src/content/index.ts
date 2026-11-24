@@ -30,6 +30,11 @@ import { pfMoreLessons } from './pf1-more.ts'
 import { pfProLessonsA } from './pf2-pro-a.ts'
 import { pfProLessonsB } from './pf2-pro-b.ts'
 import { pfIncidents } from './pf-incidents.ts'
+import { dataStartLessons } from './de0-start.ts'
+import { py1Lessons } from './py1-basics.ts'
+import { py2Lessons } from './py2-data.ts'
+import { py1MoreLessons } from './py1-more.ts'
+import { py2MoreLessons } from './py2-more.ts'
 
 export const acts: Act[] = [
   { id: 'prologue', title: { en: 'Prologue: First Day', mr: 'प्रस्तावना: पहिला दिवस' }, client: 'Kestrel HQ', domain: { en: 'QA consulting', mr: 'QA कन्सल्टिंग' }, building: 'hq', rank: 'QA Associate', lessons: prologueLessons, available: true },
@@ -44,20 +49,44 @@ export const acts: Act[] = [
   { id: 'pw2', title: { en: 'Playwright 2 · Like a Pro: The Release Gate', mr: 'Playwright 2 · व्यावसायिक: रिलीजचं दार' }, client: 'SkyHop Ops', domain: { en: 'Airline operations · network, API and CI', mr: 'एअरलाइन ऑपरेशन्स · network, API आणि CI' }, building: 'hangar', rank: 'Senior SDET', level: 'intermediate', lessons: [...pwProLessonsA, ...pwProLessonsB], available: true },
   { id: 'pf1', title: { en: 'Performance 1 · Foundations: The Flash Sale', mr: 'Performance 1 · पाया: फ्लॅश सेल' }, client: 'StageDoor', domain: { en: 'Ticketing · load testing with k6', mr: 'तिकीट विक्री · k6 सह load testing' }, building: 'arena', rank: 'Performance Tester', level: 'basic', lessons: [...pfStartLessons, ...pfBasicsLessons, ...pfMoreLessons], available: true },
   { id: 'pf2', title: { en: 'Performance 2 · Like a Pro: Opening Night', mr: 'Performance 2 · व्यावसायिक: पहिल्या प्रयोगाची रात्र' }, client: 'StageDoor Live', domain: { en: 'Live events · stress, spike and soak tests', mr: 'लाइव्ह इव्हेंट्स · stress, spike आणि soak tests' }, building: 'stage', rank: 'Performance Engineer', level: 'intermediate', lessons: [...pfProLessonsA, ...pfProLessonsB], available: true },
-  { id: 'de1', title: { en: 'Data Engineering: The Midnight Pipeline', mr: 'डेटा इंजिनिअरिंग: मध्यरात्रीची pipeline' }, client: 'Kestrel Data', domain: { en: 'Python · PySpark · AWS Glue · Lambda · S3 · data warehouse', mr: 'Python · PySpark · AWS Glue · Lambda · S3 · data warehouse' }, building: 'pipeline', rank: 'Data Engineer', lessons: [], available: false },
+  // ---------- Data World ----------
+  { id: 'dprologue', title: { en: 'Prologue: First Day at Kestrel Data', mr: 'प्रस्तावना: Kestrel Data मधला पहिला दिवस' }, client: 'Kestrel Data', domain: { en: 'What data engineers build', mr: 'डेटा इंजिनिअर्स काय बनवतात' }, building: 'pipeline', rank: 'Data Intern', lessons: dataStartLessons, available: true },
+  { id: 'py1', title: { en: 'Python 1 · Foundations: The Messy Order Book', mr: 'Python 1 · पाया: गोंधळलेली ऑर्डर वही' }, client: 'ChaiCart', domain: { en: 'Chai delivery · Python basics', mr: 'चहा डिलिव्हरी · Python मूलभूत' }, building: 'chai', rank: 'Python Apprentice', level: 'basic', lessons: [...py1Lessons, ...py1MoreLessons], available: true },
+  { id: 'py2', title: { en: 'Python 2 · Real Data: The Mandi Files', mr: 'Python 2 · खरा डेटा: मंडीच्या files' }, client: 'KisanMandi', domain: { en: 'Farm produce market · files, JSON, cleaning', mr: 'शेतमाल बाजार · files, JSON, cleaning' }, building: 'mandi', rank: 'Data Wrangler', level: 'intermediate', lessons: [...py2Lessons, ...py2MoreLessons], available: true },
+  { id: 'lake1', title: { en: 'S3 Data Lake: The Lake of Receipts', mr: 'S3 Data Lake: पावत्यांचं तळं' }, client: 'ChaiCart Cloud', domain: { en: 'AWS S3 · buckets, keys, partitions, boto3', mr: 'AWS S3 · buckets, keys, partitions, boto3' }, building: 'lake', rank: 'Cloud Data Associate', level: 'basic', lessons: [], available: false },
+  { id: 'lambda1', title: { en: 'Serverless with Lambda: The 2 a.m. File', mr: 'Lambda सह Serverless: रात्री 2 ची file' }, client: 'ChaiCart Cloud', domain: { en: 'AWS Lambda · S3 events, handlers, logs', mr: 'AWS Lambda · S3 events, handlers, logs' }, building: 'lambda', rank: 'Serverless Builder', level: 'intermediate', lessons: [], available: false },
+  { id: 'spark1', title: { en: 'PySpark: A Billion Chai Orders', mr: 'PySpark: अब्जावधी चहा ऑर्डर्स' }, client: 'ChaiCart Analytics', domain: { en: 'PySpark · DataFrames, joins, aggregations, partitions', mr: 'PySpark · DataFrames, joins, aggregations, partitions' }, building: 'spark', rank: 'Big Data Engineer', level: 'intermediate', lessons: [], available: false },
+  { id: 'glue1', title: { en: 'Glue ETL: The Nightly Pipeline', mr: 'Glue ETL: रात्रीची pipeline' }, client: 'KisanMandi Cloud', domain: { en: 'AWS Glue · crawlers, catalog, jobs, bookmarks', mr: 'AWS Glue · crawlers, catalog, jobs, bookmarks' }, building: 'glue', rank: 'ETL Engineer', level: 'advanced', lessons: [], available: false },
+  { id: 'dwh1', title: { en: 'The Warehouse: One Version of the Truth', mr: 'Warehouse: सत्याची एकच आवृत्ती' }, client: 'KisanMandi HQ', domain: { en: 'Data warehouse · star schema, SCD, incremental loads', mr: 'Data warehouse · star schema, SCD, incremental loads' }, building: 'dwh', rank: 'Data Engineer', level: 'advanced', lessons: [], available: false },
+  // ---------- Dev World (later) ----------
+  { id: 'dev1', title: { en: 'Development: coming later', mr: 'डेव्हलपमेंट: नंतर येणार' }, client: 'Kestrel Labs', domain: { en: 'Software development', mr: 'सॉफ्टवेअर डेव्हलपमेंट' }, building: 'devhq', rank: 'Developer', lessons: [], available: false },
 ]
 
-export type TrackId = 'start' | 'sql' | 'api' | 'selenium' | 'playwright' | 'perf' | 'later'
+export type WorldId = 'qa' | 'data' | 'dev'
+export type TrackId = 'start' | 'sql' | 'api' | 'selenium' | 'playwright' | 'perf' | 'dstart' | 'python' | 'cloud' | 'bigdata' | 'warehouse' | 'devsoon'
+
+/** Separate careers, each with its own map. */
+export const worlds: { id: WorldId; title: T; icon: string; heading: T; available: boolean }[] = [
+  { id: 'qa', title: { en: 'QA World', mr: 'QA विश्व' }, icon: '🧪', heading: { en: 'Your QA career', mr: 'तुमचा QA करिअर मार्ग' }, available: true },
+  { id: 'data', title: { en: 'Data World', mr: 'डेटा विश्व' }, icon: '🛠️', heading: { en: 'Your data engineering career', mr: 'तुमचा डेटा इंजिनिअरिंग करिअर मार्ग' }, available: true },
+  { id: 'dev', title: { en: 'Dev World', mr: 'डेव्ह विश्व' }, icon: '💻', heading: { en: 'Your developer career', mr: 'तुमचा डेव्हलपर करिअर मार्ग' }, available: false },
+]
+const START_TRACK: Record<WorldId, TrackId> = { qa: 'start', data: 'dstart', dev: 'devsoon' }
 
 /** Tracks are independent career paths. After the prologue, SQL and API can be learned in either order. */
-export const tracks: { id: TrackId; title: T; blurb: T; acts: string[]; soon?: boolean }[] = [
-  { id: 'start', title: { en: 'Start here', mr: 'इथून सुरुवात' }, blurb: { en: 'Your first day at Kestrel QA.', mr: 'Kestrel QA मधला तुमचा पहिला दिवस.' }, acts: ['prologue'] },
-  { id: 'sql', title: { en: 'SQL and database testing', mr: 'SQL आणि डेटाबेस टेस्टिंग' }, blurb: { en: 'Ask the database questions and catch bad data.', mr: 'डेटाबेसला प्रश्न विचारा आणि चुकीचा डेटा पकडा.' }, acts: ['sql1', 'sql2', 'sql3'] },
-  { id: 'api', title: { en: 'API testing', mr: 'API टेस्टिंग' }, blurb: { en: 'Talk to servers directly, the way apps do, and test what they answer.', mr: 'ॲप्सप्रमाणे थेट सर्व्हरशी बोला, आणि त्यांची उत्तरं तपासा.' }, acts: ['api1', 'api2'] },
-  { id: 'selenium', title: { en: 'UI automation with Selenium and Java', mr: 'Selenium आणि Java सह UI ऑटोमेशन' }, blurb: { en: 'Write Java that drives a real web page, and catch bugs before release.', mr: 'खरं web page चालवणारा Java code लिहा, आणि रिलीजआधी bugs पकडा.' }, acts: ['sel1', 'sel2'] },
-  { id: 'playwright', title: { en: 'Modern UI automation with Playwright', mr: 'Playwright सह आधुनिक UI ऑटोमेशन' }, blurb: { en: 'Write TypeScript tests that wait by themselves, mock the network and check APIs too.', mr: 'आपोआप वाट पाहणाऱ्या, network mock करणाऱ्या आणि API सुद्धा तपासणाऱ्या TypeScript tests लिहा.' }, acts: ['pw1', 'pw2'] },
-  { id: 'perf', title: { en: 'Performance testing with k6', mr: 'k6 सह परफॉर्मन्स टेस्टिंग' }, blurb: { en: 'Send thousands of virtual users at a server and find where it breaks.', mr: 'server वर हजारो virtual users पाठवा आणि तो कुठे मोडतो ते शोधा.' }, acts: ['pf1', 'pf2'] },
-  { id: 'later', title: { en: 'Coming next', mr: 'पुढे येणार' }, blurb: { en: 'Data engineering: Python, PySpark, AWS Glue, Lambda, S3 and a data warehouse.', mr: 'डेटा इंजिनिअरिंग: Python, PySpark, AWS Glue, Lambda, S3 आणि data warehouse.' }, acts: ['de1'], soon: true },
+export const tracks: { id: TrackId; world: WorldId; title: T; blurb: T; acts: string[]; soon?: boolean }[] = [
+  { id: 'start', world: 'qa', title: { en: 'Start here', mr: 'इथून सुरुवात' }, blurb: { en: 'Your first day at Kestrel QA.', mr: 'Kestrel QA मधला तुमचा पहिला दिवस.' }, acts: ['prologue'] },
+  { id: 'sql', world: 'qa', title: { en: 'SQL and database testing', mr: 'SQL आणि डेटाबेस टेस्टिंग' }, blurb: { en: 'Ask the database questions and catch bad data.', mr: 'डेटाबेसला प्रश्न विचारा आणि चुकीचा डेटा पकडा.' }, acts: ['sql1', 'sql2', 'sql3'] },
+  { id: 'api', world: 'qa', title: { en: 'API testing', mr: 'API टेस्टिंग' }, blurb: { en: 'Talk to servers directly, the way apps do, and test what they answer.', mr: 'ॲप्सप्रमाणे थेट सर्व्हरशी बोला, आणि त्यांची उत्तरं तपासा.' }, acts: ['api1', 'api2'] },
+  { id: 'selenium', world: 'qa', title: { en: 'UI automation with Selenium and Java', mr: 'Selenium आणि Java सह UI ऑटोमेशन' }, blurb: { en: 'Write Java that drives a real web page, and catch bugs before release.', mr: 'खरं web page चालवणारा Java code लिहा, आणि रिलीजआधी bugs पकडा.' }, acts: ['sel1', 'sel2'] },
+  { id: 'playwright', world: 'qa', title: { en: 'Modern UI automation with Playwright', mr: 'Playwright सह आधुनिक UI ऑटोमेशन' }, blurb: { en: 'Write TypeScript tests that wait by themselves, mock the network and check APIs too.', mr: 'आपोआप वाट पाहणाऱ्या, network mock करणाऱ्या आणि API सुद्धा तपासणाऱ्या TypeScript tests लिहा.' }, acts: ['pw1', 'pw2'] },
+  { id: 'perf', world: 'qa', title: { en: 'Performance testing with k6', mr: 'k6 सह परफॉर्मन्स टेस्टिंग' }, blurb: { en: 'Send thousands of virtual users at a server and find where it breaks.', mr: 'server वर हजारो virtual users पाठवा आणि तो कुठे मोडतो ते शोधा.' }, acts: ['pf1', 'pf2'] },
+  { id: 'dstart', world: 'data', title: { en: 'Start here', mr: 'इथून सुरुवात' }, blurb: { en: 'Your first day at Kestrel Data: what a data pipeline is.', mr: 'Kestrel Data मधला तुमचा पहिला दिवस: data pipeline म्हणजे काय.' }, acts: ['dprologue'] },
+  { id: 'python', world: 'data', title: { en: 'Python for data', mr: 'डेटासाठी Python' }, blurb: { en: 'Real Python, from the first print() to cleaning messy files.', mr: 'खरं Python, पहिल्या print() पासून गोंधळलेल्या files साफ करण्यापर्यंत.' }, acts: ['py1', 'py2'] },
+  { id: 'cloud', world: 'data', title: { en: 'AWS for data: S3 and Lambda', mr: 'डेटासाठी AWS: S3 आणि Lambda' }, blurb: { en: 'Store files in a data lake and process them the moment they land.', mr: 'data lake मध्ये files ठेवा आणि त्या येताच त्यांच्यावर प्रक्रिया करा.' }, acts: ['lake1', 'lambda1'], soon: true },
+  { id: 'bigdata', world: 'data', title: { en: 'Big data with PySpark and Glue', mr: 'PySpark आणि Glue सह big data' }, blurb: { en: 'Transform millions of rows with Spark, and run it every night with AWS Glue.', mr: 'Spark ने लाखो rows बदला, आणि AWS Glue ने ते रोज रात्री चालवा.' }, acts: ['spark1', 'glue1'], soon: true },
+  { id: 'warehouse', world: 'data', title: { en: 'Data warehouse', mr: 'Data warehouse' }, blurb: { en: 'Model facts and dimensions so every report tells the same truth.', mr: 'facts आणि dimensions असे मांडा की प्रत्येक रिपोर्ट एकच सत्य सांगेल.' }, acts: ['dwh1'], soon: true },
+  { id: 'devsoon', world: 'dev', title: { en: 'Coming later', mr: 'नंतर येणार' }, blurb: { en: 'Software development, in the same story style.', mr: 'सॉफ्टवेअर डेव्हलपमेंट, याच गोष्टीच्या शैलीत.' }, acts: ['dev1'], soon: true },
 ]
 
 export const allLessons: Lesson[] = acts.flatMap((a) => a.lessons)
@@ -76,21 +105,28 @@ export function trackOf(lessonId: string): TrackId {
   return tracks.find((t) => act && t.acts.includes(act.id))?.id ?? 'start'
 }
 
-/** Lessons unlock in story order within a track. Each track opens once the prologue is done. */
+export function worldOf(track: TrackId): WorldId {
+  return tracks.find((t) => t.id === track)?.world ?? 'qa'
+}
+export function startTrackOf(world: WorldId): TrackId {
+  return START_TRACK[world]
+}
+
+/** Lessons unlock in story order within a track. Each track opens once its world's prologue is done. */
 export function isUnlocked(id: string, completed: Record<string, unknown>): boolean {
   const track = trackOf(id)
   const list = trackLessons(track)
   const idx = list.findIndex((l) => l.id === id)
   if (idx > 0) return Boolean(completed[list[idx - 1].id])
-  if (track === 'start') return true
-  const prologue = trackLessons('start')
-  return prologue.every((l) => completed[l.id])
+  const start = START_TRACK[worldOf(track)]
+  if (track === start) return true
+  return trackLessons(start).every((l) => completed[l.id])
 }
 
 /** The client's own location, used as the background for each lesson's problem scene. */
 export function placeOf(lessonId: string): Place {
   const act = acts.find((a) => a.lessons.some((l) => l.id === lessonId))
-  const map: Record<string, Place> = { hq: 'office', shop: 'shop', warehouse: 'warehouse', bank: 'bank', delivery: 'restaurant', payments: 'office', clinic: 'clinic', lab: 'clinic', airline: 'station', hangar: 'station', arena: 'fair', stage: 'fair' }
+  const map: Record<string, Place> = { hq: 'office', shop: 'shop', warehouse: 'warehouse', bank: 'bank', delivery: 'restaurant', payments: 'office', clinic: 'clinic', lab: 'clinic', airline: 'station', hangar: 'station', arena: 'fair', stage: 'fair', pipeline: 'office', chai: 'kitchen', mandi: 'market', lake: 'warehouse', lambda: 'office', spark: 'warehouse', glue: 'warehouse', dwh: 'warehouse' }
   return map[act?.building ?? 'hq'] ?? 'office'
 }
 

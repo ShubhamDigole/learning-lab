@@ -60,9 +60,9 @@ export function Exam({ questions, onPass }: { questions: ExamQ[]; onPass: (score
     if (picked !== null) return
     setPicked(k)
     if (k === q.answer) {
-      sfx.chime()
+      sfx.success()
       setScore((s) => s + 1)
-    } else sfx.buzz()
+    } else sfx.wrong()
   }
 
   return (

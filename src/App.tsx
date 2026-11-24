@@ -1,9 +1,9 @@
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { acts, incidents, lessonById } from './content/index.ts'
+import { acts, incidents, lessonById, tracks, worlds } from './content/index.ts'
 import { getDb } from './db/engine.ts'
 import { LangContext } from './lib/i18n.tsx'
-import { setMuted } from './lib/sound.ts'
+import { setMusic, setMuted, sfx } from './lib/sound.ts'
 import { useProgress } from './state/progress.ts'
 import { CityMap } from './screens/CityMap.tsx'
 import { IncidentReplay } from './screens/IncidentReplay.tsx'
@@ -23,13 +23,16 @@ export default function App() {
     getDb() // warm up the in-browser Postgres while the story plays
   }, [])
   useEffect(() => setMuted(progress.muted), [progress.muted])
+  useEffect(() => setMusic(progress.music !== false), [progress.music])
   useEffect(() => {
     document.documentElement.lang = 'en'
   }, [])
 
   const toMap = () => setScreen({ name: 'map' })
   const stars = Object.values(progress.completed).reduce((s, c) => s + c.stars, 0)
-  const rank = [...acts].reverse().find((a) => a.lessons.length > 0 && a.lessons.every((l) => progress.completed[l.id]))?.rank ?? 'New Hire'
+  // the rank shown is the one earned in the world that is open
+  const worldActs = acts.filter((a) => tracks.some((t) => t.world === (progress.world ?? 'qa') && t.acts.includes(a.id)))
+  const rank = [...worldActs].reverse().find((a) => a.lessons.length > 0 && a.lessons.every((l) => progress.completed[l.id]))?.rank ?? (progress.world === 'data' ? 'Data Trainee' : 'New Hire')
   const due = dueSkills(api).length
 
   return (
@@ -41,6 +44,26 @@ export default function App() {
               <button type="button" className="brand" onClick={toMap}>
                 QA <mark>Quest</mark>
               </button>
+              <nav className="world-switch" aria-label="Choose a world">
+                {worlds.map((w) => (
+                  <button
+                    type="button"
+                    key={w.id}
+                    className={`world-tab ${(progress.world ?? 'qa') === w.id ? 'on' : ''}`}
+                    aria-pressed={(progress.world ?? 'qa') === w.id}
+                    disabled={!w.available}
+                    title={w.available ? w.title.en : `${w.title.en}: coming later`}
+                    onClick={() => {
+                      sfx.click()
+                      api.setWorld(w.id)
+                      toMap()
+                    }}
+                  >
+                    <span aria-hidden>{w.icon}</span> {w.title.en}
+                    {!w.available && <span className="soon-chip">soon</span>}
+                  </button>
+                ))}
+              </nav>
               <div className="who">
                 <span className="who-name">{progress.playerName}</span>
                 <span className="rank">{rank}</span>
@@ -57,8 +80,13 @@ export default function App() {
                   मराठी
                 </button>
                 <button type="button" className="btn small quiet" onClick={api.toggleMute} aria-pressed={!progress.muted} aria-label="Sound">
-                  {progress.muted ? 'Sound off' : 'Sound on'}
+                  {progress.muted ? '🔇 Sound off' : '🔊 Sound on'}
                 </button>
+                {!progress.muted && (
+                  <button type="button" className={`btn small ${progress.music !== false ? 'toggle-on' : 'quiet'}`} onClick={api.toggleMusic} aria-pressed={progress.music !== false} title="Soft background music">
+                    {progress.music !== false ? '🎵 Music on' : '🎵 Music off'}
+                  </button>
+                )}
               </div>
             </header>
           )}

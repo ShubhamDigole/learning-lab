@@ -1048,3 +1048,30 @@ main { max-width: 1180px; margin: 0 auto; padding-block: 8px 64px; }
   .load-top { grid-template-columns: 1fr; }
   .load-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ---------- world switcher ---------- */
+.world-switch { display: flex; gap: 4px; flex-wrap: wrap; }
+.world-tab { display: inline-flex; align-items: center; gap: 5px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink-2); border-radius: 99px; padding: 3px 11px; font: inherit; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
+.world-tab.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.world-tab:disabled { opacity: 0.55; cursor: not-allowed; }
+.world-tab:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+.soon-chip { font-size: 0.62rem; background: var(--marker); color: var(--marker-ink); border-radius: 99px; padding: 0 6px; }
+
+/* ---------- Python lab ---------- */
+.py-lab { display: grid; gap: 10px; }
+.py-files { border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+.py-file-tabs { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; padding: 6px 8px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+.py-files-label { font-size: 0.72rem; font-weight: 800; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
+.py-file-tabs button { border: 1.5px solid var(--line); background: var(--panel); border-radius: 8px; padding: 2px 9px; font-family: var(--f-mono); font-size: 0.76rem; color: var(--ink); cursor: pointer; }
+.py-file-tabs button.on { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.py-file-view { max-height: 210px; overflow: auto; }
+.py-file-view pre { margin: 0; padding: 8px 12px; font-family: var(--f-mono); font-size: 0.78rem; white-space: pre; }
+.py-csv { border-collapse: collapse; font-family: var(--f-mono); font-size: 0.76rem; width: max-content; min-width: 100%; }
+.py-csv th, .py-csv td { padding: 3px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.py-csv th { background: var(--panel-2); position: sticky; top: 0; }
+.py-csv td.empty { color: var(--bug); font-weight: 800; }
+.py-status { margin-left: 8px; font-size: 0.7rem; color: var(--code-dim); font-weight: 600; }
+.py-status.loading { color: #f5c04a; }
+.py-out { margin: 0; padding: 8px 12px; font-family: var(--f-mono); font-size: 0.82rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 300px; overflow-y: auto; color: var(--code-ink); min-height: 3em; }
+.py-out .bad { color: #ff9d92; }
+.py-out .muted { color: var(--code-dim); }

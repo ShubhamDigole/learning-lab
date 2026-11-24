@@ -90,8 +90,30 @@ export function highlightJs(code: string) {
   return out
 }
 
-/** Picks the TypeScript, Java, API or SQL highlighter from the code itself. */
+const PY_WORDS = new Set('and as assert break class continue def del elif else except False finally for from global if import in is lambda None nonlocal not or pass raise return True try while with yield print len range open int float str list dict set tuple sum min max sorted enumerate zip round'.split(' '))
+const PY_LIKE = /^\s*(def |import |from \w+ import |for \w+(, ?\w+)* in |with open|print\(|elif |class \w+.*:\s*$)|\bf"|\bNone\b|\bTrue\b|\bFalse\b|:\s*#|\.append\(|\.items\(\)|^\s*#/m
+
+/** Highlighter for Python. */
+export function highlightPython(code: string) {
+  const out: ReactElement[] = []
+  const re = /([rbfRBF]?"""[\s\S]*?"""|[rbfRBF]?'''[\s\S]*?'''|[rbfRBF]?"(?:[^"\\\n]|\\.)*"|[rbfRBF]?'(?:[^'\\\n]|\\.)*')|(#.*$)|(@\w+)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|(\s+|.)/gm
+  let m: RegExpExecArray | null
+  let i = 0
+  while ((m = re.exec(code))) {
+    const k = i++
+    if (m[1]) out.push(<span key={k} className="tok-str">{m[1]}</span>)
+    else if (m[2]) out.push(<span key={k} className="tok-com">{m[2]}</span>)
+    else if (m[3]) out.push(<span key={k} className="tok-ann">{m[3]}</span>)
+    else if (m[4]) out.push(<span key={k} className="tok-num">{m[4]}</span>)
+    else if (m[5]) out.push(<span key={k} className={PY_WORDS.has(m[5]) ? 'tok-kw' : /^[A-Z]/.test(m[5]) ? 'tok-type' : undefined}>{m[5]}</span>)
+    else out.push(<span key={k}>{m[0]}</span>)
+  }
+  return out
+}
+
+/** Picks the Python, TypeScript, Java, API or SQL highlighter from the code itself. */
 export function highlightCode(code: string) {
+  if (PY_LIKE.test(code) && !/\bSELECT\b|;\s*$|=>|System\.out|\bconst |\blet /m.test(code)) return highlightPython(code)
   if (JS_LIKE.test(code) && !/\bSELECT\b/.test(code) && !/System\.out|\bdriver\.|@Test/.test(code)) return highlightJs(code)
   if (JAVA_LIKE.test(code) && !/\bSELECT\b/.test(code)) return highlightJava(code)
   return API_LIKE.test(code) ? highlightApi(code) : highlightSql(code)

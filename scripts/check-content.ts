@@ -15,6 +15,8 @@ import { runPlaywright, compileSpec } from '../src/playwright/runner.ts'
 import { gradePlaywright } from '../src/playwright/grade.ts'
 import { runK6, compileK6 } from '../src/perf/k6.ts'
 import { gradePerf } from '../src/perf/grade.ts'
+import { execPython } from '../src/python/harness.ts'
+import { gradePython } from '../src/python/grade.ts'
 
 // --only=pw0-1,pf  checks just the lessons whose id starts with one of these (fast, skips the database)
 const onlyArg = process.argv.find((a) => a.startsWith('--only='))
@@ -199,6 +201,36 @@ const pfRun = async (where: string, steps: TaskStep[]) => {
 }
 for (const l of lessons) if (l.practice.steps.some((s) => s.kind === 'perf' || (s.kind === 'choice' && s.perfSandbox))) await pfRun(`${l.code} ${l.title.en}`, l.practice.steps)
 for (const i of incidentList) if (i.rewind.steps.some((s) => s.kind === 'perf' || (s.kind === 'choice' && s.perfSandbox))) await pfRun(`incident ${i.id}`, i.rewind.steps)
+
+// Data World / Python: solutions pass (output, checks, hidden data); starters do not.
+const pyLessons = lessons.filter((l) => l.practice.steps.some((s) => s.kind === 'python' || (s.kind === 'choice' && s.pythonSandbox)))
+if (pyLessons.length) {
+  const { loadPyodide } = await import('pyodide')
+  const py = await loadPyodide()
+  const runner = async (code: string, files: Record<string, string>, checks: string[]) => execPython(py as never, code, files, checks)
+  for (const l of pyLessons) {
+    for (const [i, s] of l.practice.steps.entries()) {
+      const tag = `${(l.code + ' ' + l.title.en).slice(0, 44).padEnd(44)} step ${i + 1}`
+      if (s.kind === 'choice' && s.pythonSandbox) {
+        const r = execPython(py as never, s.pythonSandbox.code, s.pythonSandbox.files ?? {}, [])
+        console.log(`OK  ${tag} python sandbox: ${r.error ? 'raises ' + r.error.type : 'prints ' + JSON.stringify(r.output.slice(0, 60))}`)
+        continue
+      }
+      if (s.kind !== 'python') continue
+      const checks = (s.checks ?? []).map((c) => c.expr)
+      const r = execPython(py as never, s.solution, s.files ?? {}, checks)
+      const g = await gradePython(s, s.solution, r, runner)
+      const rs = execPython(py as never, s.starter, s.files ?? {}, checks)
+      const gs = await gradePython(s, s.starter, rs, runner)
+      const starterOk = s.starterPasses ? gs.ok : !gs.ok
+      if (g.ok && starterOk) console.log(`OK  ${tag} python: out=${JSON.stringify(r.output.slice(0, 70))} hidden data ${g.variants.filter((v) => v.passed).length}/${g.variants.length}`)
+      else {
+        failures++
+        console.log(`ERR ${tag}: solution ok=${g.ok} (${g.message.en.slice(0, 400)}) | starter ${s.starterPasses ? 'should pass' : 'should not pass'} but ok=${gs.ok} (${gs.message.en.slice(0, 120)})`)
+      }
+    }
+  }
+}
 
 // Every bilingual text must have both languages.
 const walkT = (v: unknown, where: string) => {

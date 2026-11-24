@@ -8,6 +8,7 @@ import { TestConsole } from './TestConsole.tsx'
 import { SeleniumLab } from './SeleniumLab.tsx'
 import { PlaywrightLab } from './PlaywrightLab.tsx'
 import { LoadLab } from './LoadLab.tsx'
+import { PythonLab } from './PythonLab.tsx'
 import { compareResults } from '../db/compare.ts'
 import { runQuery, SqlError } from '../db/engine.ts'
 import { Bi, L } from '../lib/i18n.tsx'
@@ -32,15 +33,15 @@ export function TaskRunner({ steps, isBoss, onComplete }: { steps: TaskStep[]; i
   const maxHints = isBoss ? Math.min(2, step.hints.length) : step.hints.length
 
   const succeed = (count = 0) => {
-    sfx.thud()
-    setTimeout(() => sfx.chime(), 150)
+    sfx.success()
+
     setResultCount(count)
     setSolved(true)
     setHit((h) => h + 1)
     setFeedback({ ok: true, text: step.successLine ?? { en: 'Evidence accepted.', mr: 'पुरावा स्वीकारला.' } })
   }
   const fail = (text: T) => {
-    sfx.buzz()
+    sfx.wrong()
     setFeedback({ ok: false, text })
   }
 
@@ -75,6 +76,7 @@ export function TaskRunner({ steps, isBoss, onComplete }: { steps: TaskStep[]; i
           {step.kind === 'selenium' && <SeleniumLab key={idx} step={step} solved={solved} onSuccess={() => succeed()} onFail={fail} />}
           {step.kind === 'playwright' && <PlaywrightLab key={idx} step={step} solved={solved} onSuccess={() => succeed()} onFail={fail} />}
           {step.kind === 'perf' && <LoadLab key={idx} step={step} solved={solved} onSuccess={() => succeed()} onFail={fail} />}
+          {step.kind === 'python' && <PythonLab key={idx} step={step} solved={solved} onSuccess={() => succeed()} onFail={fail} />}
         </motion.div>
       </AnimatePresence>
 
@@ -188,6 +190,12 @@ function ChoiceStepView({ step, solved, onSuccess, onFail }: { step: ChoiceStep;
         <div className="sandbox">
           <Bi t={{ en: 'Practice lab: press Run and watch Playwright drive the page, then answer below.', mr: 'सराव lab: Run दाबा आणि Playwright page कसं चालवतं ते पाहा, मग खाली उत्तर द्या.' }} className="muted small" />
           <PlaywrightLab sandbox={step.playwrightSandbox} />
+        </div>
+      )}
+      {step.pythonSandbox && (
+        <div className="sandbox">
+          <Bi t={{ en: 'Python lab: press Run, read what it prints, then answer below.', mr: 'Python lab: Run दाबा, काय print होतं ते वाचा, मग खाली उत्तर द्या.' }} className="muted small" />
+          <PythonLab sandbox={step.pythonSandbox} />
         </div>
       )}
       {step.perfSandbox && (

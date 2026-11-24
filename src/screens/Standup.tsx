@@ -66,9 +66,9 @@ export function Standup({ api, onExit }: { api: ProgressApi; onExit: () => void 
     setPicked(k)
     const ok = k === cur.item.answer
     if (ok) {
-      sfx.chime()
+      sfx.success()
       setScore((s) => s + 1)
-    } else sfx.buzz()
+    } else sfx.wrong()
     if (!bonus) api.reviewSkill(cur.skill, ok)
   }
 

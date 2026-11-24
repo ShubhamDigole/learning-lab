@@ -16,13 +16,17 @@ export interface Progress {
   muted: boolean
   /** show Marathi under English */
   marathi: boolean
+  /** soft background music (only when sound is on) */
+  music: boolean
+  /** which career map is open */
+  world: 'qa' | 'data' | 'dev'
 }
 
 const KEY = 'qa-quest-v2'
 const DAY = 24 * 60 * 60 * 1000
 const LADDER = [1, 3, 7, 21]
 
-const empty: Progress = { playerName: '', seenIntro: false, completed: {}, skills: {}, incidents: {}, muted: false, marathi: true }
+const empty: Progress = { playerName: '', seenIntro: false, completed: {}, skills: {}, incidents: {}, muted: false, marathi: true, music: true, world: 'qa' }
 
 function load(): Progress {
   try {
@@ -52,6 +56,8 @@ export function useProgress() {
     setName: (playerName: string) => update((p) => ({ ...p, playerName, seenIntro: true })),
     toggleMute: () => update((p) => ({ ...p, muted: !p.muted })),
     toggleMarathi: () => update((p) => ({ ...p, marathi: !p.marathi })),
+    toggleMusic: () => update((p) => ({ ...p, music: !p.music })),
+    setWorld: (world: Progress['world']) => update((p) => ({ ...p, world })),
     markSeen: (skill: string) =>
       update((p) => (p.skills[skill] ? p : { ...p, skills: { ...p.skills, [skill]: { state: 'seen', interval: 0, due: 0 } } })),
     completeLesson: (id: string, skill: string, stars: number) =>

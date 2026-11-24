@@ -50,6 +50,11 @@ const PERF_INTRO: Record<number, { en: string; mr: string }> = {
   4: { en: 'Write a k6 script, press Run, and watch virtual users hit the practice server in fast-forward.', mr: 'k6 script लिहा, Run दाबा, आणि virtual users सराव server वर वेगाने धडकताना पाहा.' },
 }
 
+const DATA_INTRO: Record<number, { en: string; mr: string }> = {
+  1: { en: 'The problem at the client, and how a data engineer fixes it.', mr: 'क्लायंटकडची समस्या, आणि डेटा इंजिनिअर ती कशी सोडवतो.' },
+  4: { en: 'Write real Python, press Run, and check what it prints. Submit also tries your code on hidden data.', mr: 'खरं Python लिहा, Run दाबा, आणि काय print होतं ते तपासा. Submit तुमचा code लपवलेल्या डेटावरही चालवून पाहतं.' },
+}
+
 export function starsFor(examScore: number, examTotal: number, hints: number) {
   if (examScore === examTotal && hints === 0) return 3
   if (hints <= 2) return 2
@@ -121,7 +126,7 @@ export function LessonPlayer({ lesson, api, onExit }: { lesson: Lesson; api: Pro
         </nav>
 
         <div className="lesson-main">
-          {step < 6 && <Bi t={(track === 'api' && API_INTRO[step]) || (track === 'selenium' && SEL_INTRO[step]) || (track === 'playwright' && PW_INTRO[step]) || (track === 'perf' && PERF_INTRO[step]) || STEP_INTRO[step]} className="step-intro" />}
+          {step < 6 && <Bi t={(track === 'api' && API_INTRO[step]) || (track === 'selenium' && SEL_INTRO[step]) || (track === 'playwright' && PW_INTRO[step]) || (track === 'perf' && PERF_INTRO[step]) || ((track === 'python' || track === 'dstart' || track === 'cloud' || track === 'bigdata' || track === 'warehouse') && DATA_INTRO[step]) || STEP_INTRO[step]} className="step-intro" />}
           <AnimatePresence mode="wait">
             <motion.section key={step} className={`panel ${step <= 1 ? 'panel-stage' : ''}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
               {step === 0 && (
@@ -195,6 +200,7 @@ export function LessonPlayer({ lesson, api, onExit }: { lesson: Lesson; api: Pro
                     onPass={(score, total) => {
                       const s = starsFor(score, total, hints ?? 0)
                       setStars(s)
+                      setTimeout(() => sfx.fanfare(), 250)
                       api.completeLesson(lesson.id, lesson.skill, s)
                       go(6)
                     }}
