@@ -1,0 +1,391 @@
+import type { Lesson } from './types.ts'
+
+// Selenium 1 basics: the first real test (open, check, report) and the four everyday locators.
+
+const LOGIN = 'https://carebridge.test/login'
+
+export const selBasicsLessons: Lesson[] = [
+  // ───────────────────────── S1.1 Your first Selenium test
+  {
+    id: 'se1-1',
+    code: 'S1.1',
+    level: 'basic',
+    title: { en: 'Your First Selenium Test: Open, Check, Report', mr: 'तुमची पहिली Selenium test: उघडा, तपासा, कळवा' },
+    skill: 'get, getTitle, assertEquals',
+    realLife: {
+      place: 'shop',
+      title: { en: 'Sending the new helper to the medical shop', mr: 'नव्या मदतनीसाला मेडिकलमध्ये पाठवणं' },
+      story: {
+        en: 'Kaka is sending Raju, his new shop helper, to collect a parcel from CareBridge Medicals. "Near the temple" is not enough, so Kaka gives the full address: Shop 4, Paud Road, Kothrud. Then a clear check: "Before you hand over the money, read the name board. It must say CareBridge." Raju comes back and reports: "Board said CareBridge, done." Last week a different helper went, saw a board saying CareBrigde, paid anyway and said nothing. A trip with no checking proves nothing.',
+        mr: 'काका त्यांच्या दुकानातल्या नव्या मदतनीसाला, राजूला, CareBridge Medicals मधून पार्सल आणायला पाठवतात. "मंदिराजवळ" एवढं पुरेसं नाही, म्हणून काका पूर्ण पत्ता देतात: दुकान 4, पौड रोड, कोथरूड. मग एक स्पष्ट check: "पैसे देण्याआधी पाटी वाच. त्यावर CareBridge असायलाच हवं." राजू परत येऊन सांगतो: "पाटीवर CareBridge होतं, काम झालं." मागच्या आठवड्यात दुसरा मदतनीस गेला होता, त्याला CareBrigde लिहिलेली पाटी दिसली, तरी त्याने पैसे दिले आणि काहीच सांगितलं नाही. तपासल्याशिवायची फेरी काहीच सिद्ध करत नाही.',
+      },
+      scene: {
+        type: 'steps',
+        steps: [
+          { icon: '📍', label: 'Go to the full address (driver.get)', mr: 'पूर्ण पत्त्यावर जा (driver.get)' },
+          { icon: '🪧', label: 'Read the name board (getTitle)', mr: 'पाटी वाचा (getTitle)' },
+          { icon: '⚖️', label: 'Compare with what Kaka said (assertEquals)', mr: 'काकांनी सांगितलेल्याशी तुलना करा (assertEquals)' },
+          { icon: '📣', label: 'Report: matched or not (PASS / FAIL)', mr: 'कळवा: जुळलं की नाही (PASS / FAIL)' },
+        ],
+      },
+    },
+    solves: {
+      dialogue: [
+        { who: 'gremlin', mood: 'smug', text: { en: 'last month i changed the login title to "CareBrigde". two weeks. nobody noticed. lol.', mr: 'मागच्या महिन्यात मी login चा title "CareBrigde" केला. दोन आठवडे. कोणाच्याच लक्षात आलं नाही. lol.' } },
+        { who: 'theo', mood: 'worried', text: { en: 'We even had a script that opened the login page every night. It stayed green the whole time.', mr: 'आपल्याकडे तर रोज रात्री login page उघडणारी script पण होती. ती पूर्ण वेळ green राहिली.' } },
+        { who: 'rex', mood: 'neutral', text: { en: 'Because it only opened the page. It never checked anything. Open, check, report, {name}. The check is the test.', mr: 'कारण ती फक्त page उघडत होती. तिने काहीच तपासलं नाही. उघडा, तपासा, कळवा, {name}. check हीच test.' } },
+        { who: 'meera', mood: 'happy', text: { en: 'One assertion on the title would have caught it on the first night.', mr: 'title वरच्या एका assertion ने पहिल्याच रात्री ते पकडलं असतं.' } },
+      ],
+      problem: { en: 'A script that only opens pages stays green even when the page is wrong. Nobody learns about the broken title until a patient complains.', mr: 'फक्त pages उघडणारी script page चुकीचं असलं तरी green राहते. एखादा रुग्ण तक्रार करेपर्यंत बिघडलेल्या title बद्दल कोणालाच कळत नाही.' },
+      solution: { en: 'Every test opens a page with driver.get, reads something real (the title, the URL) and compares it with Assert.assertEquals. A wrong value turns the test red with a clear "expected but found" message.', mr: 'प्रत्येक test driver.get ने page उघडते, काहीतरी खरं वाचते (title, URL) आणि Assert.assertEquals ने त्याची तुलना करते. चुकीची value आली की test लाल होते आणि स्पष्ट "expected but found" message येतो.' },
+    },
+    lesson: [
+      { en: 'driver.get("https://carebridge.test/login") opens a page, like typing an address in the browser bar. It needs the full address, starting with https://. Without it, Selenium stops with InvalidArgumentException.', mr: 'driver.get("https://carebridge.test/login") page उघडतं, browser च्या पत्त्याच्या पट्टीत पत्ता टाइप केल्यासारखं. त्याला https:// ने सुरू होणारा पूर्ण पत्ता लागतो. तो नसेल तर Selenium InvalidArgumentException देऊन थांबतो.' },
+      { en: 'driver.getTitle() reads the name on the browser tab, for example "Login | CareBridge". driver.getCurrentUrl() reads the address you actually landed on. They can differ from what you asked for: open /dashboard without logging in and you land on /login.', mr: 'driver.getTitle() browser tab वरचं नाव वाचतं, उदा. "Login | CareBridge". driver.getCurrentUrl() तुम्ही प्रत्यक्ष कुठे पोहोचलात तो पत्ता वाचतं. ते तुम्ही मागितलेल्यापेक्षा वेगळं असू शकतं: login न करता /dashboard उघडलं तर तुम्ही /login वर पोहोचता.' },
+      { en: 'Assert.assertEquals(actual, expected) is the check. Actual first (what the page shows), expected second (what it should show). If they match, the log shows a green tick. If not, the test stops and TestNG prints: expected [Login | CareBridge] but found [Login | CareBrigde].', mr: 'Assert.assertEquals(actual, expected) हा check आहे. आधी actual (page काय दाखवतं), मग expected (काय दाखवायला हवं). जुळलं तर log मध्ये हिरवी tick दिसते. नाही जुळलं तर test थांबते आणि TestNG लिहितो: expected [Login | CareBridge] but found [Login | CareBrigde].' },
+      { en: 'The tester\'s rule: a test without an assertion proves nothing. It only proves that nothing crashed. Ask yourself: if this page were broken, would my test turn red?', mr: 'testers चा नियम: assertion नसलेली test काहीच सिद्ध करत नाही. ती फक्त एवढंच सिद्ध करते की काही crash झालं नाही. स्वतःला विचारा: हे page बिघडलं असतं, तर माझी test लाल झाली असती का?' },
+    ],
+    syntax: {
+      template: 'driver.get("https://carebridge.test/page");\nString actual = driver.getTitle();\nAssert.assertEquals(actual, "Expected title");',
+      parts: [
+        { code: 'driver.get(url)', means: { en: 'go to this full address (with https://)', mr: 'या पूर्ण पत्त्यावर जा (https:// सह)' } },
+        { code: 'driver.getTitle()', means: { en: 'read the name on the browser tab', mr: 'browser tab वरचं नाव वाचा' } },
+        { code: 'driver.getCurrentUrl()', means: { en: 'read the address you really landed on', mr: 'प्रत्यक्ष पोहोचलात तो पत्ता वाचा' } },
+        { code: 'Assert.assertEquals(actual, expected)', means: { en: 'compare: page value first, expected value second', mr: 'तुलना: आधी page ची value, मग अपेक्षित value' } },
+      ],
+      example: [
+        { code: 'driver.get("https://carebridge.test/login");', note: { en: 'Raju goes to the full address', mr: 'राजू पूर्ण पत्त्यावर जातो' } },
+        { code: 'String board = driver.getTitle();', note: { en: 'he reads the name board', mr: 'तो पाटी वाचतो' } },
+        { code: 'System.out.println("Board says: " + board);', note: { en: 'optional: write it in the log too', mr: 'हवं तर: log मध्येही लिहा' } },
+        { code: 'Assert.assertEquals(board, "Login | CareBridge");', note: { en: 'compare with what Kaka said', mr: 'काकांनी सांगितलेल्याशी तुलना' } },
+        { code: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");', note: { en: 'and check he is at the right shop', mr: 'आणि तो योग्य दुकानात आहे का ते तपासा' } },
+      ],
+      pitfall: { en: 'Copy the expected text exactly, including spaces and capitals: "Login | CareBridge" with a space on each side of the bar. Also keep the order actual, expected, or the fail message will read backwards.', mr: 'अपेक्षित मजकूर तंतोतंत लिहा, spaces आणि capitals सकट: "Login | CareBridge", उभ्या रेषेच्या दोन्ही बाजूला space. आणि क्रम actual, expected असाच ठेवा, नाहीतर fail message उलटं वाचलं जाईल.' },
+    },
+    practice: {
+      intro: { en: 'Your first real tests. The editor is on the left, the practice browser on the right. Press Run to watch, Submit to hand in. Hidden buggy builds will check that your assertions really catch problems.', mr: 'तुमच्या पहिल्या खऱ्या tests. editor डावीकडे, practice browser उजवीकडे. पाहायला Run दाबा, द्यायला Submit. तुमचे assertions खरंच अडचणी पकडतात का, हे लपवलेले buggy builds तपासतील.' },
+      steps: [
+        {
+          kind: 'selenium',
+          prompt: { en: 'Open the login page and check its title is exactly "Login | CareBridge". Read the title with driver.getTitle() and compare it with Assert.assertEquals.', mr: 'login page उघडा आणि त्याचा title नेमका "Login | CareBridge" आहे का तपासा. driver.getTitle() ने title वाचा आणि Assert.assertEquals ने तुलना करा.' },
+          startUrl: 'https://carebridge.test/',
+          starter: `driver.get("${LOGIN}");\n// TODO: read the title and assert it equals "Login | CareBridge"\n`,
+          solution: `driver.get("${LOGIN}");\nString title = driver.getTitle();\nAssert.assertEquals(title, "Login | CareBridge");`,
+          minAssertions: 1,
+          mustUse: [{ pattern: 'getTitle\\(\\)', message: { en: 'Read the real title with driver.getTitle().', mr: 'खरा title driver.getTitle() ने वाचा.' } }],
+          mustCatch: [{ bug: 'title-typo', label: { en: 'Login title misspelled as "CareBrigde"', mr: 'login title चं स्पेलिंग "CareBrigde" झालं' } }],
+          hints: [
+            { en: 'Two steps: read the title into a variable, then compare.', mr: 'दोन steps: title एका variable मध्ये वाचा, मग तुलना करा.' },
+            { en: 'String title = driver.getTitle();', mr: 'String title = driver.getTitle();' },
+            { en: 'The page value goes first, the expected text second: Assert.assertEquals(title, "...");', mr: 'आधी page ची value, मग अपेक्षित मजकूर: Assert.assertEquals(title, "...");' },
+            { en: 'String title = driver.getTitle();\nAssert.assertEquals(title, "Login | CareBridge");', mr: 'String title = driver.getTitle();\nAssert.assertEquals(title, "Login | CareBridge");' },
+          ],
+          successLine: { en: 'Caught it. On the buggy build your test said: expected [Login | CareBridge] but found [Login | CareBrigde]. Gremlin\'s two-week trick now lasts one run.', mr: 'पकडलं. buggy build वर तुमची test म्हणाली: expected [Login | CareBridge] but found [Login | CareBrigde]. gremlin ची दोन आठवड्यांची युक्ती आता एका run मध्ये पकडली जाते.' },
+        },
+        {
+          kind: 'selenium',
+          prompt: { en: 'Open the doctors page and check the browser really landed there: assert that driver.getCurrentUrl() equals "https://carebridge.test/doctors".', mr: 'doctors page उघडा आणि browser खरंच तिथे पोहोचला का ते तपासा: driver.getCurrentUrl() हे "https://carebridge.test/doctors" आहे असं assert करा.' },
+          startUrl: 'https://carebridge.test/',
+          starter: '// TODO: open https://carebridge.test/doctors\n// TODO: assert the current URL\n',
+          solution: 'driver.get("https://carebridge.test/doctors");\nAssert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/doctors");',
+          minAssertions: 1,
+          mustUse: [{ pattern: 'getCurrentUrl\\(\\)', message: { en: 'Read where you landed with driver.getCurrentUrl().', mr: 'कुठे पोहोचलात ते driver.getCurrentUrl() ने वाचा.' } }],
+          hints: [
+            { en: 'First line: driver.get with the full address, starting with https://.', mr: 'पहिली ओळ: https:// ने सुरू होणाऱ्या पूर्ण पत्त्यासह driver.get.' },
+            { en: 'driver.get("https://carebridge.test/doctors");', mr: 'driver.get("https://carebridge.test/doctors");' },
+            { en: 'You can put getCurrentUrl() straight inside the assertion as the actual value.', mr: 'getCurrentUrl() थेट assertion मध्ये actual value म्हणून ठेवू शकता.' },
+            { en: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/doctors");', mr: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/doctors");' },
+          ],
+          successLine: { en: 'Landed where you asked. The doctors page is public, so no redirect.', mr: 'मागितलं तिथेच पोहोचलात. doctors page सगळ्यांसाठी खुलं आहे, म्हणून redirect नाही.' },
+        },
+        {
+          kind: 'choice',
+          prompt: { en: 'Theo wrote this one-line test in a hurry. Press Run and read the red line in the log. What went wrong?', mr: 'Theo ने घाईत ही एका ओळीची test लिहिली. Run दाबा आणि log मधली लाल ओळ वाचा. काय चुकलं?' },
+          seleniumSandbox: { code: 'driver.get("carebridge.test/login");\nAssert.assertEquals(driver.getTitle(), "Login | CareBridge");', startUrl: 'https://carebridge.test/' },
+          options: [
+            { en: 'InvalidArgumentException: the address has no https://, so it is not a full web address', mr: 'InvalidArgumentException: पत्त्यात https:// नाही, म्हणून तो पूर्ण web पत्ता नाही' },
+            { en: 'AssertionError: the title was wrong', mr: 'AssertionError: title चुकीचा होता' },
+            { en: 'NoSuchElementException: the login box was missing', mr: 'NoSuchElementException: login box सापडला नाही' },
+            { en: 'Nothing, the test passed', mr: 'काहीच नाही, test pass झाली' },
+          ],
+          correct: [0],
+          explain: { en: 'driver.get needs the full address. The test stopped on line 1, so the assertion never even ran. Fix: driver.get("https://carebridge.test/login").', mr: 'driver.get ला पूर्ण पत्ता लागतो. test ओळ 1 वरच थांबली, त्यामुळे assertion चाललंच नाही. उपाय: driver.get("https://carebridge.test/login").' },
+          hints: [
+            { en: 'The first word of the red line is the exception name.', mr: 'लाल ओळीतला पहिला शब्द म्हणजे exception चं नाव.' },
+            { en: 'Compare Theo\'s address with the ones in your own tests.', mr: 'Theo चा पत्ता तुमच्या tests मधल्या पत्त्यांशी तुलना करा.' },
+          ],
+          successLine: { en: 'Kaka\'s rule: always the full address.', mr: 'काकांचा नियम: नेहमी पूर्ण पत्ता.' },
+        },
+        {
+          kind: 'selenium',
+          prompt: { en: 'A security check. Open https://carebridge.test/dashboard without logging in. A stranger should be sent to the login page. Assert both: the current URL is "https://carebridge.test/login" and the title is "Login | CareBridge".', mr: 'एक security check. login न करता https://carebridge.test/dashboard उघडा. अनोळखी माणसाला login page वर पाठवायला हवं. दोन्ही assert करा: current URL "https://carebridge.test/login" आहे आणि title "Login | CareBridge" आहे.' },
+          startUrl: 'https://carebridge.test/',
+          starter: 'driver.get("https://carebridge.test/dashboard");\n// TODO: assert where you landed (the URL)\n// TODO: assert the title of that page\n',
+          solution: 'driver.get("https://carebridge.test/dashboard");\nAssert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");\nAssert.assertEquals(driver.getTitle(), "Login | CareBridge");',
+          minAssertions: 2,
+          mustUse: [
+            { pattern: 'getCurrentUrl\\(\\)', message: { en: 'Check the URL with driver.getCurrentUrl().', mr: 'URL driver.getCurrentUrl() ने तपासा.' } },
+            { pattern: 'getTitle\\(\\)', message: { en: 'Check the title with driver.getTitle().', mr: 'title driver.getTitle() ने तपासा.' } },
+          ],
+          mustCatch: [{ bug: 'title-typo', label: { en: 'Login title misspelled as "CareBrigde"', mr: 'login title चं स्पेलिंग "CareBrigde" झालं' } }],
+          hints: [
+            { en: 'You asked for /dashboard, but the expected URL is the login page. That is the point of the test.', mr: 'तुम्ही /dashboard मागितलं, पण अपेक्षित URL login page चा आहे. हाच या test चा मुद्दा.' },
+            { en: 'Write two Assert.assertEquals lines, one per check.', mr: 'दोन Assert.assertEquals ओळी लिहा, प्रत्येक check साठी एक.' },
+            { en: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");', mr: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");' },
+            { en: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");\nAssert.assertEquals(driver.getTitle(), "Login | CareBridge");', mr: 'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");\nAssert.assertEquals(driver.getTitle(), "Login | CareBridge");' },
+          ],
+          successLine: { en: 'The door is locked for strangers, and you have proof. Two assertions, two facts.', mr: 'अनोळखी लोकांसाठी दार बंद आहे, आणि तुमच्याकडे पुरावा आहे. दोन assertions, दोन तथ्यं.' },
+        },
+      ],
+    },
+    exam: [
+      {
+        q: { en: 'Which line opens the CareBridge login page correctly?', mr: 'कोणती ओळ CareBridge चं login page बरोबर उघडते?' },
+        options: [
+          'driver.get("carebridge.test/login");',
+          'driver.open("https://carebridge.test/login");',
+          'driver.get("https://carebridge.test/login");',
+          'driver.getTitle("https://carebridge.test/login");',
+        ],
+        answer: 2,
+        explain: { en: 'driver.get with the full address, https:// included. There is no driver.open, and getTitle only reads.', mr: 'पूर्ण पत्त्यासह driver.get, https:// सकट. driver.open असं काही नाही, आणि getTitle फक्त वाचतं.' },
+      },
+      {
+        q: { en: 'This test ran on a buggy build. What does the failure tell you?', mr: 'ही test buggy build वर चालली. failure काय सांगतो?' },
+        code: 'java.lang.AssertionError: expected [Dashboard | CareBridge] but found [Login | CareBridge]',
+        options: [
+          { en: 'The test code does not compile', mr: 'test चा code compile होत नाही' },
+          { en: 'The test expected the dashboard, but the browser was still on the login page', mr: 'test ला dashboard अपेक्षित होता, पण browser अजून login page वरच होता' },
+          { en: 'The login page title is misspelled', mr: 'login page च्या title चं स्पेलिंग चुकलं आहे' },
+          { en: 'The browser could not open the site', mr: 'browser ला site उघडता आली नाही' },
+        ],
+        answer: 1,
+        explain: { en: 'Expected is what you wanted, found is what the page showed. The login did not get through to the dashboard.', mr: 'expected म्हणजे तुम्हाला काय हवं होतं, found म्हणजे page ने काय दाखवलं. login होऊन dashboard पर्यंत पोहोचलं नाही.' },
+      },
+      {
+        q: { en: 'What does this test prove?', mr: 'ही test काय सिद्ध करते?' },
+        code: 'driver.get("https://carebridge.test/login");\nString title = driver.getTitle();\nSystem.out.println(title);',
+        options: [
+          { en: 'That the title is correct', mr: 'title बरोबर आहे' },
+          { en: 'That login works', mr: 'login चालतं' },
+          { en: 'That the page has no bugs', mr: 'page मध्ये एकही bug नाही' },
+          { en: 'Almost nothing: there is no assertion, so it passes even with a wrong title', mr: 'जवळजवळ काहीच नाही: assertion नाही, म्हणून title चुकीचा असला तरी pass होते' },
+        ],
+        answer: 3,
+        explain: { en: 'Printing is not checking. Without Assert, the test stays green on the "CareBrigde" bug.', mr: 'print करणं म्हणजे तपासणं नाही. Assert शिवाय "CareBrigde" bug असतानाही test green राहते.' },
+      },
+      {
+        q: { en: 'You open /appointments without logging in. Which assertion matches CareBridge\'s real behaviour?', mr: 'तुम्ही login न करता /appointments उघडता. CareBridge च्या खऱ्या वागणुकीशी कोणतं assertion जुळतं?' },
+        options: [
+          'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/login");',
+          'Assert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/appointments");',
+          'Assert.assertEquals(driver.getTitle(), "My appointments | CareBridge");',
+          'Assert.assertEquals(driver.getTitle(), "Page not found | CareBridge");',
+        ],
+        answer: 0,
+        explain: { en: 'Pages behind login send strangers to /login. getCurrentUrl shows where you really are.', mr: 'login मागची pages अनोळखी लोकांना /login वर पाठवतात. तुम्ही खरं कुठे आहात ते getCurrentUrl दाखवतं.' },
+      },
+    ],
+    recap: { line: { en: 'Open with driver.get (full https address), read with getTitle or getCurrentUrl, and always check with Assert.assertEquals(actual, expected).', mr: 'driver.get ने उघडा (पूर्ण https पत्ता), getTitle किंवा getCurrentUrl ने वाचा, आणि नेहमी Assert.assertEquals(actual, expected) ने तपासा.' }, icon: '🪧' },
+  },
+
+  // ───────────────────────── S1.2 Finding elements
+  {
+    id: 'se1-2',
+    code: 'S1.2',
+    level: 'basic',
+    title: { en: 'Finding Elements: id, name, className and cssSelector', mr: 'Elements शोधणं: id, name, className आणि cssSelector' },
+    skill: 'Locators: id, name, class, CSS',
+    realLife: {
+      place: 'home',
+      title: { en: 'Finding one flat in a housing society', mr: 'सोसायटीत एक फ्लॅट शोधणं' },
+      story: {
+        en: 'A courier boy enters Shantiniketan Society in Kothrud with a parcel. If the label says "Flat B-204", he walks straight there: only one flat in the whole society has that number. If it says only "Deshpande", he reads the name plates, and there may be two Deshpandes. If it says "the green door", half the society has green doors. When the watchman says "the blue door on the second floor of B wing", that full description also leads to exactly one door.',
+        mr: 'एक courier वाला पार्सल घेऊन कोथरूडच्या शांतिनिकेतन सोसायटीत येतो. लेबलवर "फ्लॅट B-204" लिहिलं असेल, तर तो थेट तिथे जातो: संपूर्ण सोसायटीत तो नंबर एकाच फ्लॅटचा आहे. फक्त "देशपांडे" लिहिलं असेल, तर तो नावाच्या पाट्या वाचतो, आणि कदाचित दोन देशपांडे असतील. "हिरवं दार" लिहिलं असेल, तर अर्ध्या सोसायटीची दारं हिरवी आहेत. वॉचमन म्हणतो "B विंग, दुसरा मजला, निळं दार", तेव्हा ते पूर्ण वर्णनसुद्धा नेमक्या एकाच दाराकडे नेतं.',
+      },
+      scene: {
+        type: 'filter',
+        rule: { en: 'Find: flat B-204 (unique, like an id)', mr: 'शोधा: फ्लॅट B-204 (एकमेव, id सारखा)' },
+        items: [
+          { icon: '🟩', label: 'A-101 green door', mr: 'A-101 हिरवं दार', pass: false },
+          { icon: '🟩', label: 'A-204 green door', mr: 'A-204 हिरवं दार', pass: false },
+          { icon: '🟦', label: 'B-204 blue door, Deshpande', mr: 'B-204 निळं दार, देशपांडे', pass: true },
+          { icon: '🟩', label: 'B-101 green door', mr: 'B-101 हिरवं दार', pass: false },
+          { icon: '🟦', label: 'C-302 blue door, Deshpande', mr: 'C-302 निळं दार, देशपांडे', pass: false },
+          { icon: '🟩', label: 'C-104 green door', mr: 'C-104 हिरवं दार', pass: false },
+        ],
+      },
+    },
+    solves: {
+      dialogue: [
+        { who: 'rex', mood: 'neutral', text: { en: 'Before the robot can type or click, it must find the thing. That address is called a locator.', mr: 'robot टाइप किंवा click करण्याआधी त्याला ती गोष्ट सापडायला हवी. त्या पत्त्याला locator म्हणतात.' } },
+        { who: 'theo', mood: 'happy', text: { en: 'I gave every important CareBridge element an id: username, password, login-btn. Use those, please.', mr: 'मी CareBridge च्या प्रत्येक महत्त्वाच्या element ला id दिला आहे: username, password, login-btn. कृपया तेच वापरा.' } },
+        { who: 'gremlin', mood: 'smug', text: { en: 'use "the third green button from the left". i move one button and your whole suite falls over. hehe.', mr: '"डावीकडून तिसरं हिरवं बटण" वापरा. मी एक बटण हलवलं की तुमचा पूर्ण suite कोसळतो. हेहे.' } },
+        { who: 'meera', mood: 'happy', text: { en: 'So we pick the most unique, most stable address first, {name}. Flat number before door colour.', mr: 'म्हणून आपण आधी सगळ्यात एकमेव आणि टिकाऊ पत्ता निवडतो, {name}. दाराच्या रंगाआधी फ्लॅट नंबर.' } },
+      ],
+      problem: { en: 'A test cannot type into "the box at the top". It needs an exact address for each element, and a weak address breaks as soon as the page changes a little.', mr: 'test "वरच्या box" मध्ये टाइप करू शकत नाही. तिला प्रत्येक element चा नेमका पत्ता लागतो, आणि कमकुवत पत्ता page थोडं बदललं की मोडतो.' },
+      solution: { en: 'Use locators: By.id first, then By.name, By.className or By.cssSelector. findElement gets one element to act on; findElements gets a list you can count.', mr: 'locators वापरा: आधी By.id, मग By.name, By.className किंवा By.cssSelector. findElement काम करण्यासाठी एक element आणतो; findElements मोजता येईल अशी यादी आणतो.' },
+    },
+    lesson: [
+      { en: 'driver.findElement(By.id("username")) finds one element so you can act on it: .sendKeys("asha") types, .click() clicks, .getText() reads. If nothing matches, Selenium throws NoSuchElementException and the test stops.', mr: 'driver.findElement(By.id("username")) एक element शोधतो, म्हणजे त्यावर काम करता येतं: .sendKeys("asha") टाइप करतो, .click() click करतो, .getText() वाचतो. काहीच जुळलं नाही तर Selenium NoSuchElementException देतो आणि test थांबते.' },
+      { en: 'The four everyday locators: By.id (the flat number, unique on the page), By.name (the name plate, common on form fields), By.className (the door colour, often shared by many elements), and By.cssSelector (a full description such as "tr.doctor-row" or "a#nav-doctors").', mr: 'रोज वापरले जाणारे चार locators: By.id (फ्लॅट नंबर, page वर एकमेव), By.name (नावाची पाटी, form fields वर नेहमी असते), By.className (दाराचा रंग, अनेक elements मध्ये सारखा), आणि By.cssSelector (पूर्ण वर्णन, जसं "tr.doctor-row" किंवा "a#nav-doctors").' },
+      { en: 'In CSS, # means id and . means class: "#login-btn" is the element with id login-btn, ".welcome" is anything with class welcome, "tr.doctor-row" is a table row with class doctor-row. If a class is shared, findElement simply returns the first match.', mr: 'CSS मध्ये # म्हणजे id आणि . म्हणजे class: "#login-btn" म्हणजे id login-btn असलेला element, ".welcome" म्हणजे class welcome असलेलं काहीही, "tr.doctor-row" म्हणजे class doctor-row असलेली table row. class सारखा असेल तर findElement फक्त पहिला जुळणारा देतो.' },
+      { en: 'findElements (with an s) returns a List of every match. It never throws: if nothing matches, the list is empty. Perfect for checks like "the doctors table shows 6 rows". Tester\'s preference: unique, stable id first, and avoid locators that depend on position or colour.', mr: 'findElements (s सकट) प्रत्येक जुळणाऱ्याची List देतो. तो कधीच exception देत नाही: काहीच जुळलं नाही तर यादी रिकामी असते. "doctors table मध्ये 6 rows दिसतात" अशा checks साठी उत्तम. testers ची पसंती: आधी एकमेव, टिकाऊ id, आणि जागेवर किंवा रंगावर अवलंबून असलेले locators टाळा.' },
+    ],
+    syntax: {
+      template: 'WebElement box = driver.findElement(By.id("..."));\nbox.sendKeys("text");\nList<WebElement> rows = driver.findElements(By.cssSelector("..."));\nint count = rows.size();',
+      parts: [
+        { code: 'By.id("username")', means: { en: 'the flat number: unique and stable, try it first', mr: 'फ्लॅट नंबर: एकमेव आणि टिकाऊ, आधी हाच वापरा' } },
+        { code: 'By.name("password")', means: { en: 'the name plate: the name attribute of a form field', mr: 'नावाची पाटी: form field चा name attribute' } },
+        { code: 'By.className("welcome")', means: { en: 'the door colour: one class name, maybe shared', mr: 'दाराचा रंग: एक class name, कदाचित अनेकांचा' } },
+        { code: 'By.cssSelector("tr.doctor-row")', means: { en: 'a full description: # for id, . for class, tag in front', mr: 'पूर्ण वर्णन: id साठी #, class साठी ., पुढे tag' } },
+        { code: 'findElement', means: { en: 'one element (first match), or NoSuchElementException', mr: 'एक element (पहिला जुळणारा), नाहीतर NoSuchElementException' } },
+        { code: 'findElements', means: { en: 'a list of all matches, empty if none', mr: 'सगळ्या जुळणाऱ्यांची यादी, काहीच नसेल तर रिकामी' } },
+      ],
+      example: [
+        { code: 'driver.findElement(By.id("username")).sendKeys("asha");', note: { en: 'flat B-204: straight to the one box', mr: 'फ्लॅट B-204: थेट त्या एकाच box कडे' } },
+        { code: 'driver.findElement(By.name("password")).sendKeys("care123");', note: { en: 'the name plate on the password field', mr: 'password field वरची नावाची पाटी' } },
+        { code: 'driver.findElement(By.cssSelector("#login-btn")).click();', note: { en: '# means id, written the CSS way', mr: '# म्हणजे id, CSS पद्धतीने लिहिलेला' } },
+        { code: 'String hello = driver.findElement(By.className("welcome")).getText();', note: { en: 'read the heading with class welcome', mr: 'class welcome असलेलं heading वाचा' } },
+        { code: 'int doctors = driver.findElements(By.cssSelector("tr.doctor-row")).size();', note: { en: 'count every door of one kind', mr: 'एका प्रकारची सगळी दारं मोजा' } },
+      ],
+      pitfall: { en: 'By.className takes ONE class name without a dot: By.className("welcome"), not ".welcome". The dot belongs in CSS: By.cssSelector(".welcome"). And findElement (no s) on a missing element throws, while findElements just gives an empty list.', mr: 'By.className ला dot शिवाय एकच class name लागतं: By.className("welcome"), ".welcome" नाही. dot CSS मध्ये लागतो: By.cssSelector(".welcome"). आणि नसलेल्या element वर findElement (s शिवाय) exception देतो, तर findElements फक्त रिकामी यादी देतो.' },
+    },
+    practice: {
+      intro: { en: 'Log in one locator at a time. Each step asks for a specific locator, so you practise all four.', mr: 'एका वेळी एक locator वापरून login करा. प्रत्येक step एक ठरावीक locator मागते, म्हणजे चारही locators चा सराव होईल.' },
+      steps: [
+        {
+          kind: 'selenium',
+          prompt: { en: 'On the login page, find the username box by its id ("username") and type asha into it.', mr: 'login page वर username box त्याच्या id ("username") ने शोधा आणि त्यात asha टाइप करा.' },
+          startUrl: LOGIN,
+          starter: `driver.get("${LOGIN}");\n// TODO: find the box with id "username" and type asha\n`,
+          solution: `driver.get("${LOGIN}");\ndriver.findElement(By.id("username")).sendKeys("asha");`,
+          mustUse: [
+            { pattern: 'By\\.id\\(\\s*"username"\\s*\\)', message: { en: 'Use By.id("username") to find the box.', mr: 'box शोधायला By.id("username") वापरा.' } },
+            { pattern: 'sendKeys\\(\\s*"asha"', message: { en: 'Type asha with .sendKeys("asha").', mr: '.sendKeys("asha") ने asha टाइप करा.' } },
+          ],
+          hints: [
+            { en: 'Find first, then act: driver.findElement(...) then .sendKeys(...).', mr: 'आधी शोधा, मग काम: driver.findElement(...) मग .sendKeys(...).' },
+            { en: 'The locator is By.id("username").', mr: 'locator आहे By.id("username").' },
+            { en: 'driver.findElement(By.id("username")).sendKeys("asha");', mr: 'driver.findElement(By.id("username")).sendKeys("asha");' },
+          ],
+          successLine: { en: 'The robot went straight to flat B-204. id is the fastest, safest address.', mr: 'robot थेट फ्लॅट B-204 कडे गेला. id हा सगळ्यात जलद, सुरक्षित पत्ता आहे.' },
+        },
+        {
+          kind: 'selenium',
+          prompt: { en: 'Now finish the login. Type care123 into the password box using By.name("password"), click the button with id "login-btn", and assert the current URL is "https://carebridge.test/dashboard".', mr: 'आता login पूर्ण करा. By.name("password") वापरून password box मध्ये care123 टाइप करा, id "login-btn" असलेल्या बटणावर click करा, आणि current URL "https://carebridge.test/dashboard" आहे असं assert करा.' },
+          startUrl: LOGIN,
+          starter: `driver.get("${LOGIN}");\ndriver.findElement(By.id("username")).sendKeys("asha");\n// TODO: type care123 into the field whose name is "password"\n// TODO: click the Log in button (id "login-btn")\n// TODO: assert you are on the dashboard URL\n`,
+          solution: `driver.get("${LOGIN}");\ndriver.findElement(By.id("username")).sendKeys("asha");\ndriver.findElement(By.name("password")).sendKeys("care123");\ndriver.findElement(By.id("login-btn")).click();\nAssert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/dashboard");`,
+          minAssertions: 1,
+          mustUse: [{ pattern: 'By\\.name\\(\\s*"password"\\s*\\)', message: { en: 'Find the password box with By.name("password").', mr: 'password box By.name("password") ने शोधा.' } }],
+          hints: [
+            { en: 'Same shape as the username line, only the locator changes to By.name.', mr: 'username च्या ओळीसारखीच रचना, फक्त locator By.name होतो.' },
+            { en: 'driver.findElement(By.name("password")).sendKeys("care123");', mr: 'driver.findElement(By.name("password")).sendKeys("care123");' },
+            { en: 'Clicking: driver.findElement(By.id("login-btn")).click(); then check getCurrentUrl().', mr: 'click: driver.findElement(By.id("login-btn")).click(); मग getCurrentUrl() तपासा.' },
+            { en: 'driver.findElement(By.name("password")).sendKeys("care123");\ndriver.findElement(By.id("login-btn")).click();\nAssert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/dashboard");', mr: 'driver.findElement(By.name("password")).sendKeys("care123");\ndriver.findElement(By.id("login-btn")).click();\nAssert.assertEquals(driver.getCurrentUrl(), "https://carebridge.test/dashboard");' },
+          ],
+          successLine: { en: 'Logged in and proved it with the URL.', mr: 'login झालं आणि URL ने सिद्धही केलं.' },
+        },
+        {
+          kind: 'choice',
+          prompt: { en: 'Rex wrote this from memory. Press Run and read the red line. Why did it stop?', mr: 'Rex ने हे आठवणीतून लिहिलं. Run दाबा आणि लाल ओळ वाचा. ते का थांबलं?' },
+          seleniumSandbox: { code: `driver.get("${LOGIN}");\ndriver.findElement(By.id("user")).sendKeys("asha");`, startUrl: LOGIN },
+          options: [
+            { en: 'The page did not load', mr: 'page load झालं नाही' },
+            { en: 'The password was wrong', mr: 'password चुकीचा होता' },
+            { en: 'NoSuchElementException: there is no element with id "user". The real id is "username"', mr: 'NoSuchElementException: id "user" असलेला element नाही. खरा id "username" आहे' },
+            { en: 'sendKeys cannot type text', mr: 'sendKeys मजकूर टाइप करू शकत नाही' },
+          ],
+          correct: [2],
+          explain: { en: 'One wrong letter in a locator and Selenium cannot find the flat. The message even shows what it searched for: {"method":"css selector","selector":"#user"}.', mr: 'locator मध्ये एक अक्षर चुकलं की Selenium ला फ्लॅट सापडत नाही. message मध्ये त्याने काय शोधलं तेसुद्धा दिसतं: {"method":"css selector","selector":"#user"}.' },
+          hints: [
+            { en: 'The exception name is the first word of the red line.', mr: 'exception चं नाव लाल ओळीतला पहिला शब्द आहे.' },
+            { en: 'Compare "user" with the id you used in step 1.', mr: '"user" ची तुम्ही step 1 मध्ये वापरलेल्या id शी तुलना करा.' },
+          ],
+          successLine: { en: 'When you see NoSuchElementException, check the locator spelling first.', mr: 'NoSuchElementException दिसला की आधी locator चं स्पेलिंग तपासा.' },
+        },
+        {
+          kind: 'selenium',
+          prompt: { en: 'After login, the dashboard greets the user in a heading with class "welcome". Read it with By.className("welcome") and assert it says exactly "Welcome, Asha Patil".', mr: 'login नंतर dashboard class "welcome" असलेल्या heading मध्ये user चं स्वागत करतो. ते By.className("welcome") ने वाचा आणि नेमकं "Welcome, Asha Patil" आहे असं assert करा.' },
+          startUrl: LOGIN,
+          starter: `driver.get("${LOGIN}");\ndriver.findElement(By.id("username")).sendKeys("asha");\ndriver.findElement(By.name("password")).sendKeys("care123");\ndriver.findElement(By.id("login-btn")).click();\n// TODO: read the text of the element with class "welcome"\n// TODO: assert it equals "Welcome, Asha Patil"\n`,
+          solution: `driver.get("${LOGIN}");\ndriver.findElement(By.id("username")).sendKeys("asha");\ndriver.findElement(By.name("password")).sendKeys("care123");\ndriver.findElement(By.id("login-btn")).click();\nString hello = driver.findElement(By.className("welcome")).getText();\nAssert.assertEquals(hello, "Welcome, Asha Patil");`,
+          minAssertions: 1,
+          mustUse: [{ pattern: 'By\\.className\\(\\s*"welcome"\\s*\\)', message: { en: 'Use By.className("welcome"), with no dot.', mr: 'By.className("welcome") वापरा, dot शिवाय.' } }],
+          mustCatch: [{ bug: 'welcome-name', label: { en: 'Dashboard says "Welcome, undefined"', mr: 'dashboard "Welcome, undefined" दाखवतो' } }],
+          hints: [
+            { en: '.getText() reads the words inside an element.', mr: '.getText() element मधले शब्द वाचतो.' },
+            { en: 'String hello = driver.findElement(By.className("welcome")).getText();', mr: 'String hello = driver.findElement(By.className("welcome")).getText();' },
+            { en: 'Then compare: Assert.assertEquals(hello, "...");', mr: 'मग तुलना: Assert.assertEquals(hello, "...");' },
+            { en: 'String hello = driver.findElement(By.className("welcome")).getText();\nAssert.assertEquals(hello, "Welcome, Asha Patil");', mr: 'String hello = driver.findElement(By.className("welcome")).getText();\nAssert.assertEquals(hello, "Welcome, Asha Patil");' },
+          ],
+          successLine: { en: 'Your check caught "Welcome, undefined" on the buggy build. Patients will never see that now.', mr: 'तुमच्या check ने buggy build वर "Welcome, undefined" पकडलं. आता रुग्णांना ते कधीच दिसणार नाही.' },
+        },
+        {
+          kind: 'selenium',
+          prompt: { en: 'You start on the home page. Click the Doctors link in the top bar with By.cssSelector("a#nav-doctors"). Then count the rows with findElements(By.cssSelector("tr.doctor-row")) and assert there are 6.', mr: 'तुम्ही home page वरून सुरू करता. वरच्या पट्टीतल्या Doctors link वर By.cssSelector("a#nav-doctors") ने click करा. मग findElements(By.cssSelector("tr.doctor-row")) ने rows मोजा आणि त्या 6 आहेत असं assert करा.' },
+          startUrl: 'https://carebridge.test/',
+          starter: 'driver.get("https://carebridge.test/");\n// TODO: click the link a#nav-doctors\n// TODO: get every tr.doctor-row with findElements\n// TODO: assert the list size is 6\n',
+          solution: 'driver.get("https://carebridge.test/");\ndriver.findElement(By.cssSelector("a#nav-doctors")).click();\nList<WebElement> rows = driver.findElements(By.cssSelector("tr.doctor-row"));\nAssert.assertEquals(rows.size(), 6);',
+          minAssertions: 1,
+          mustUse: [
+            { pattern: 'By\\.cssSelector\\(\\s*"a#nav-doctors"\\s*\\)', message: { en: 'Click the link with By.cssSelector("a#nav-doctors").', mr: 'link वर By.cssSelector("a#nav-doctors") ने click करा.' } },
+            { pattern: 'findElements\\(\\s*By\\.cssSelector\\(\\s*"tr\\.doctor-row"\\s*\\)', message: { en: 'Count with driver.findElements(By.cssSelector("tr.doctor-row")).', mr: 'driver.findElements(By.cssSelector("tr.doctor-row")) ने मोजा.' } },
+          ],
+          hints: [
+            { en: 'a#nav-doctors means: an a (link) tag whose id is nav-doctors.', mr: 'a#nav-doctors म्हणजे: id nav-doctors असलेला a (link) tag.' },
+            { en: 'findElements gives a List<WebElement>. Its .size() is the count.', mr: 'findElements एक List<WebElement> देतो. त्याचा .size() म्हणजे संख्या.' },
+            { en: 'List<WebElement> rows = driver.findElements(By.cssSelector("tr.doctor-row"));', mr: 'List<WebElement> rows = driver.findElements(By.cssSelector("tr.doctor-row"));' },
+            { en: 'driver.findElement(By.cssSelector("a#nav-doctors")).click();\nList<WebElement> rows = driver.findElements(By.cssSelector("tr.doctor-row"));\nAssert.assertEquals(rows.size(), 6);', mr: 'driver.findElement(By.cssSelector("a#nav-doctors")).click();\nList<WebElement> rows = driver.findElements(By.cssSelector("tr.doctor-row"));\nAssert.assertEquals(rows.size(), 6);' },
+          ],
+          successLine: { en: 'Six doctors, counted by a robot. If one ever goes missing, this test turns red.', mr: 'सहा doctors, robot ने मोजलेले. कधी एक गायब झाला तर ही test लाल होईल.' },
+        },
+      ],
+    },
+    exam: [
+      {
+        q: { en: 'A field has id="username" and name="username". Which locator should you prefer?', mr: 'एका field ला id="username" आणि name="username" आहे. कोणता locator पसंत करावा?' },
+        options: [
+          'By.cssSelector("form > input:nth-child(2)")',
+          'By.className("btn")',
+          'By.xpath("/html/body/main/form/input[1]")',
+          'By.id("username")',
+        ],
+        answer: 3,
+        explain: { en: 'A unique, stable id is the flat number: short, fast and unaffected when the layout moves.', mr: 'एकमेव, टिकाऊ id म्हणजे फ्लॅट नंबर: छोटा, जलद, आणि layout हलला तरी बिघडत नाही.' },
+      },
+      {
+        q: { en: 'What happens here if no element on the page has class "banner"?', mr: 'page वर class "banner" असलेला एकही element नसेल तर इथे काय होतं?' },
+        code: 'List<WebElement> items = driver.findElements(By.className("banner"));\nSystem.out.println(items.size());',
+        options: [
+          { en: 'It prints 0', mr: '0 print होतं' },
+          { en: 'NoSuchElementException', mr: 'NoSuchElementException' },
+          { en: 'It prints null', mr: 'null print होतं' },
+          { en: 'It does not compile', mr: 'compile होत नाही' },
+        ],
+        answer: 0,
+        explain: { en: 'findElements never throws. No match means an empty list, so size() is 0. findElement (no s) would throw.', mr: 'findElements कधीच exception देत नाही. काहीच न जुळल्यास रिकामी यादी, म्हणून size() 0. findElement (s शिवाय) exception दिला असता.' },
+      },
+      {
+        q: { en: 'Which CSS selector means "a table row with class doctor-row"?', mr: 'कोणता CSS selector म्हणजे "class doctor-row असलेली table row"?' },
+        options: ['tr#doctor-row', 'tr.doctor-row', '#tr.doctor-row', 'doctor-row.tr'],
+        answer: 1,
+        explain: { en: 'Tag first, then a dot for the class. # would mean an id.', mr: 'आधी tag, मग class साठी dot. # म्हणजे id झाला असता.' },
+      },
+      {
+        q: { en: 'This line stops the test. Why?', mr: 'ही ओळ test थांबवते. का?' },
+        code: 'driver.findElement(By.className(".welcome")).getText();',
+        options: [
+          { en: 'getText needs a number', mr: 'getText ला संख्या लागते' },
+          { en: 'The dashboard has no heading', mr: 'dashboard वर heading नाही' },
+          { en: 'By.className takes the class name without a dot, so it looks for a class literally called ".welcome"', mr: 'By.className ला dot शिवाय class name लागतं, म्हणून तो ".welcome" नावाचाच class शोधतो' },
+          { en: 'findElement only works with By.id', mr: 'findElement फक्त By.id सोबत चालतो' },
+        ],
+        answer: 2,
+        explain: { en: 'Write By.className("welcome"), or put the dot in CSS: By.cssSelector(".welcome").', mr: 'By.className("welcome") लिहा, किंवा dot CSS मध्ये ठेवा: By.cssSelector(".welcome").' },
+      },
+    ],
+    recap: { line: { en: 'Find before you act: By.id first, then name, className or cssSelector. findElement gets one (or throws), findElements gets a list to count.', mr: 'काम करण्याआधी शोधा: आधी By.id, मग name, className किंवा cssSelector. findElement एक आणतो (नाहीतर exception), findElements मोजायला यादी आणतो.' }, icon: '🏘️' },
+  },
+]
