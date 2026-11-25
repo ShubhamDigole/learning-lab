@@ -221,6 +221,23 @@ export function LessonPlayer({ lesson, api, onExit }: { lesson: Lesson; api: Pro
                     {stars !== null && <Stars n={stars} />}
                     <Stamp text="SAVED TO JOURNAL" tone="teal" />
                   </motion.div>
+                  {lesson.interview && lesson.interview.length > 0 && (
+                    <section className="interview" aria-label="Interview corner">
+                      <h3>
+                        <span aria-hidden>🎤</span> <L en="Interview corner: questions you may be asked" mr="मुलाखत कोपरा: तुम्हाला विचारले जाऊ शकणारे प्रश्न" />
+                      </h3>
+                      {lesson.interview.map((it, i) => (
+                        <details key={i} className="iv-item">
+                          <summary>
+                            <Bi t={it.q} />
+                          </summary>
+                          <div className="iv-answer">
+                            <Bi t={it.a} />
+                          </div>
+                        </details>
+                      ))}
+                    </section>
+                  )}
                   {lesson.outro && <Dialogue lines={lesson.outro} onDone={onOutroDone} place={clientPlace} />}
                   {(outroDone || !lesson.outro) && (
                     <motion.button type="button" className="btn primary big" onClick={onExit} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

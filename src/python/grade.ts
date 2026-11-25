@@ -1,9 +1,9 @@
 // Grades a Python practice step. Explains Python errors in plain words (bilingual), compares printed
 // output, runs hidden checks, then re-runs the same code on hidden data sets ("variants").
 import type { PythonStep, T } from '../content/types.ts'
-import type { PyRun } from './harness.ts'
+import type { AwsConfig, PyRun } from './harness.ts'
 
-export type PyRunner = (code: string, files: Record<string, string>, checks: string[]) => Promise<PyRun>
+export type PyRunner = (code: string, files: Record<string, string>, checks: string[], aws: AwsConfig | null) => Promise<PyRun>
 export interface PyVariantResult {
   label: T
   passed: boolean
@@ -49,9 +49,25 @@ function compareOutput(got: string, want: string[]): T | null {
   return { en: `The printed output is not right yet. Expected:\n${w.join('\n')}\nYou printed:\n${g.join('\n') || '(nothing)'}`, mr: `print झालेलं output अजून बरोबर नाही. अपेक्षित:\n${w.join('\n')}\nतुम्ही print केलं:\n${g.join('\n') || '(काहीच नाही)'}` }
 }
 
+const LAMBDA_TIPS: Record<string, T> = {
+  KeyError: { en: 'The event did not have the key your handler asked for. Print the event first and follow its real shape: event["Records"][0]["s3"]["object"]["key"].', mr: 'handler ने मागितलेली key event मध्ये नव्हती. आधी event print करा आणि त्याचा खरा आकार पाळा: event["Records"][0]["s3"]["object"]["key"].' },
+  ClientError: { en: 'An AWS call was refused. The error code says why: NoSuchKey (wrong key, often a URL-encoded key that was not decoded), AccessDenied (the role lacks a permission), NoSuchBucket.', mr: 'एक AWS call नाकारला गेला. error code कारण सांगतो: NoSuchKey (चुकीची key, बहुतेक URL-encoded key decode केली नाही), AccessDenied (role ला परवानगी नाही), NoSuchBucket.' },
+  'Sandbox.Timedout': { en: 'The function ran longer than its timeout. Do less work per invocation, raise the timeout, or check context.get_remaining_time_in_millis().', mr: 'function त्याच्या timeout पेक्षा जास्त वेळ चाललं. एका invocation मध्ये कमी काम करा, timeout वाढवा, किंवा context.get_remaining_time_in_millis() तपासा.' },
+  RecursiveInvocationDetected: { en: 'The function writes into the same place that triggers it, so it keeps calling itself. Write output to a different bucket or prefix, and filter the trigger.', mr: 'function ज्या जागेमुळे सुरू होतं तिथेच लिहितं, म्हणून ते स्वतःलाच परत परत बोलावतं. output दुसऱ्या bucket किंवा prefix मध्ये लिहा, आणि trigger filter करा.' },
+}
+function explainLambda(inv: NonNullable<PyRun['aws']>['invocations'][number]): T {
+  const e = inv.error!
+  const tip = LAMBDA_TIPS[e.errorType] ?? TIPS[e.errorType] ?? { en: 'Open the Lambda logs tab: the [ERROR] line and the traceback show where it failed.', mr: 'Lambda logs टॅब उघडा: [ERROR] ओळ आणि traceback कुठे बिघडलं ते दाखवतात.' }
+  return { en: `Your Lambda failed (${inv.source} invocation): ${e.errorType}: ${e.errorMessage}
+${tip.en}`, mr: `तुमचं Lambda बिघडलं (${inv.source} invocation): ${e.errorType}: ${e.errorMessage}
+${tip.mr}` }
+}
+
 /** Checks one run against output/includes/checks. Returns a failure message or null. */
-function judge(r: PyRun, output: string[] | undefined, includes: string[] | undefined, checks: { expr: string; message: T }[]): T | null {
+function judge(r: PyRun, output: string[] | undefined, includes: string[] | undefined, checks: { expr: string; message: T }[], allowLambdaErrors = false): T | null {
   if (r.error) return explainPy(r)
+  const failed = r.aws?.invocations.find((i) => !i.ok)
+  if (failed && !allowLambdaErrors) return explainLambda(failed)
   if (output) {
     const m = compareOutput(r.output, output)
     if (m) return m
@@ -67,7 +83,7 @@ function judge(r: PyRun, output: string[] | undefined, includes: string[] | unde
 export async function gradePython(step: PythonStep, code: string, r: PyRun, run: PyRunner): Promise<PyGrade> {
   const no = (message: T): PyGrade => ({ ok: false, message, variants: [] })
   const checks = step.checks ?? []
-  const bad = judge(r, step.output, step.outputIncludes, checks)
+  const bad = judge(r, step.output, step.outputIncludes, checks, step.allowLambdaErrors)
   if (bad) return no(bad)
   const src = stripComments(code)
   for (const m of step.mustUse ?? []) if (!new RegExp(m.pattern).test(src)) return no(m.message)
@@ -76,8 +92,8 @@ export async function gradePython(step: PythonStep, code: string, r: PyRun, run:
   let firstFail: T | null = null
   for (const v of step.variants ?? []) {
     const vChecks = v.checks ?? checks
-    const vr = await run(code, { ...(step.files ?? {}), ...v.files }, vChecks.map((c) => c.expr))
-    const fail = judge(vr, v.output, v.outputIncludes, vChecks)
+    const vr = await run(code, { ...(step.files ?? {}), ...(v.files ?? {}) }, vChecks.map((c) => c.expr), v.aws ?? step.aws ?? null)
+    const fail = judge(vr, v.output, v.outputIncludes, vChecks, step.allowLambdaErrors)
     variants.push({ label: v.label, passed: !fail })
     if (fail && !firstFail) firstFail = fail
   }

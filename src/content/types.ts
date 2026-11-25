@@ -7,6 +7,8 @@ import type { AppState, BugId } from '../selenium/app.ts'
 import type { SkyBug, SkyState } from '../playwright/app.ts'
 import type { PerfBug } from '../perf/server.ts'
 import type { PerfResult } from '../perf/k6.ts'
+import type { AwsConfig } from '../python/harness.ts'
+export type { AwsConfig }
 export type { BugId, SkyBug, PerfBug }
 export type { Place, ApiDraft, ApiExpect }
 
@@ -88,7 +90,7 @@ export interface ChoiceStep {
   /** show the load-test lab with this k6 script so the learner can run it and read the results */
   perfSandbox?: { code: string; build?: PerfBug[] }
   /** show the Python lab with this code (and data files) so the learner can run it before answering */
-  pythonSandbox?: { code: string; files?: Record<string, string> }
+  pythonSandbox?: { code: string; files?: Record<string, string>; aws?: AwsConfig }
   successLine?: T
 }
 
@@ -107,8 +109,12 @@ export interface PythonStep {
   outputIncludes?: string[]
   /** Python expressions evaluated after the program, in its variables; each must be true */
   checks?: { expr: string; message: T }[]
-  /** the same code is re-run on hidden data (files replaced); it must still be right */
-  variants?: { label: T; files: Record<string, string>; output?: string[]; outputIncludes?: string[]; checks?: { expr: string; message: T }[] }[]
+  /** the same code is re-run on hidden data (files replaced, and the AWS account replaced when `aws` is given); it must still be right */
+  variants?: { label: T; files?: Record<string, string>; aws?: AwsConfig; output?: string[]; outputIncludes?: string[]; checks?: { expr: string; message: T }[] }[]
+  /** a simulated AWS account: S3 buckets and objects, bucket settings, IAM denies, and a Lambda function whose handler is the learner's code */
+  aws?: AwsConfig
+  /** Lambda invocations are allowed to fail (for lessons about errors and retries) */
+  allowLambdaErrors?: boolean
   mustUse?: { pattern: string; message: T }[]
   mustNotUse?: { pattern: string; message: T }[]
   starterPasses?: boolean
@@ -268,6 +274,8 @@ export interface Lesson {
   exam: ExamQ[]
   recap: { line: T; icon: string }
   outro?: DialogueLine[]
+  /** Interview corner: questions an interviewer may ask on this topic, with model answers (shown after the exam) */
+  interview?: { q: T; a: T }[]
 }
 
 export interface Act {

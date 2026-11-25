@@ -1,5 +1,5 @@
 // Browser side of the Python lab: one worker, reused between runs, replaced if a run takes too long.
-import type { PyRun } from './harness.ts'
+import type { AwsConfig, PyRun } from './harness.ts'
 
 const TIMEOUT_MS = 10000
 let worker: Worker | null = null
@@ -30,7 +30,7 @@ export function pythonLoaded() {
   return worker !== null
 }
 
-export async function runPython(code: string, files: Record<string, string> = {}, checks: string[] = []): Promise<PyRun> {
+export async function runPython(code: string, files: Record<string, string> = {}, checks: string[] = [], aws: AwsConfig | null = null): Promise<PyRun> {
   await warmPython()
   const w = worker!
   const id = ++seq
@@ -49,6 +49,6 @@ export async function runPython(code: string, files: Record<string, string> = {}
       resolve(e.data.result as PyRun)
     }
     w.addEventListener('message', onMsg)
-    w.postMessage({ id, code, files, checks })
+    w.postMessage({ id, code, files, checks, aws })
   })
 }

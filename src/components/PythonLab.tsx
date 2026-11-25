@@ -4,7 +4,8 @@ import { StateEffect, StateField } from '@codemirror/state'
 import { Decoration } from '@codemirror/view'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { PythonStep, T } from '../content/types.ts'
+import type { AwsConfig, PythonStep, T } from '../content/types.ts'
+import { AwsConsole } from './AwsConsole.tsx'
 import { runPython, warmPython } from '../python/client.ts'
 import { gradePython, type PyVariantResult } from '../python/grade.ts'
 import type { PyRun } from '../python/harness.ts'
@@ -73,7 +74,7 @@ function FilesPanel({ files }: { files: Record<string, string> }) {
 }
 
 /** The Python lab: real Python (Pyodide) with data files, printed output and hidden checks. */
-export function PythonLab({ step, sandbox, solved, onSuccess, onFail }: { step?: PythonStep; sandbox?: { code: string; files?: Record<string, string> }; solved?: boolean; onSuccess?: () => void; onFail?: (t: T) => void }) {
+export function PythonLab({ step, sandbox, solved, onSuccess, onFail }: { step?: PythonStep; sandbox?: { code: string; files?: Record<string, string>; aws?: AwsConfig }; solved?: boolean; onSuccess?: () => void; onFail?: (t: T) => void }) {
   const files = (step ? step.files : sandbox?.files) ?? {}
   const [code, setCode] = useState(step ? step.starter : sandbox!.code)
   const [state, setState] = useState<'loading' | 'ready' | 'running' | 'grading'>('loading')
@@ -98,7 +99,7 @@ export function PythonLab({ step, sandbox, solved, onSuccess, onFail }: { step?:
     setVariants(null)
     view.current?.dispatch({ effects: setMark.of(null) })
     const checks = (step?.checks ?? []).map((c) => c.expr)
-    const r = await runPython(code, files, checks)
+    const r = await runPython(code, files, checks, step?.aws ?? sandbox?.aws ?? null)
     setResult(r)
     if (r.error?.line) view.current?.dispatch({ effects: setMark.of(r.error.line) })
     if (r.error) sfx.buzz()
@@ -174,6 +175,7 @@ export function PythonLab({ step, sandbox, solved, onSuccess, onFail }: { step?:
           {result && !result.output && !result.error && <span className="muted">(the program printed nothing)</span>}
         </pre>
       </div>
+      {result?.aws && <AwsConsole aws={result.aws} />}
       {variants && (
         <div className="mutants">
           <div className="test-editor-label">

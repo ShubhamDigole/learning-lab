@@ -35,6 +35,11 @@ import { py1Lessons } from './py1-basics.ts'
 import { py2Lessons } from './py2-data.ts'
 import { py1MoreLessons } from './py1-more.ts'
 import { py2MoreLessons } from './py2-more.ts'
+import { s3BasicsLessons } from './s3-basics.ts'
+import { s3MoreLessons } from './s3-more.ts'
+import { lambdaBasicsLessons } from './lambda-basics.ts'
+import { lambdaMoreLessons } from './lambda-more.ts'
+import { dataIncidents } from './data-incidents.ts'
 
 export const acts: Act[] = [
   { id: 'prologue', title: { en: 'Prologue: First Day', mr: 'प्रस्तावना: पहिला दिवस' }, client: 'Kestrel HQ', domain: { en: 'QA consulting', mr: 'QA कन्सल्टिंग' }, building: 'hq', rank: 'QA Associate', lessons: prologueLessons, available: true },
@@ -53,8 +58,8 @@ export const acts: Act[] = [
   { id: 'dprologue', title: { en: 'Prologue: First Day at Kestrel Data', mr: 'प्रस्तावना: Kestrel Data मधला पहिला दिवस' }, client: 'Kestrel Data', domain: { en: 'What data engineers build', mr: 'डेटा इंजिनिअर्स काय बनवतात' }, building: 'pipeline', rank: 'Data Intern', lessons: dataStartLessons, available: true },
   { id: 'py1', title: { en: 'Python 1 · Foundations: The Messy Order Book', mr: 'Python 1 · पाया: गोंधळलेली ऑर्डर वही' }, client: 'ChaiCart', domain: { en: 'Chai delivery · Python basics', mr: 'चहा डिलिव्हरी · Python मूलभूत' }, building: 'chai', rank: 'Python Apprentice', level: 'basic', lessons: [...py1Lessons, ...py1MoreLessons], available: true },
   { id: 'py2', title: { en: 'Python 2 · Real Data: The Mandi Files', mr: 'Python 2 · खरा डेटा: मंडीच्या files' }, client: 'KisanMandi', domain: { en: 'Farm produce market · files, JSON, cleaning', mr: 'शेतमाल बाजार · files, JSON, cleaning' }, building: 'mandi', rank: 'Data Wrangler', level: 'intermediate', lessons: [...py2Lessons, ...py2MoreLessons], available: true },
-  { id: 'lake1', title: { en: 'S3 Data Lake: The Lake of Receipts', mr: 'S3 Data Lake: पावत्यांचं तळं' }, client: 'ChaiCart Cloud', domain: { en: 'AWS S3 · buckets, keys, partitions, boto3', mr: 'AWS S3 · buckets, keys, partitions, boto3' }, building: 'lake', rank: 'Cloud Data Associate', level: 'basic', lessons: [], available: false },
-  { id: 'lambda1', title: { en: 'Serverless with Lambda: The 2 a.m. File', mr: 'Lambda सह Serverless: रात्री 2 ची file' }, client: 'ChaiCart Cloud', domain: { en: 'AWS Lambda · S3 events, handlers, logs', mr: 'AWS Lambda · S3 events, handlers, logs' }, building: 'lambda', rank: 'Serverless Builder', level: 'intermediate', lessons: [], available: false },
+  { id: 'lake1', title: { en: 'S3 Data Lake: The Lake of Receipts', mr: 'S3 Data Lake: पावत्यांचं तळं' }, client: 'ChaiCart Cloud', domain: { en: 'AWS S3 · buckets, keys, partitions, boto3', mr: 'AWS S3 · buckets, keys, partitions, boto3' }, building: 'lake', rank: 'Cloud Data Associate', level: 'basic', lessons: [...s3BasicsLessons, ...s3MoreLessons], available: true },
+  { id: 'lambda1', title: { en: 'Serverless with Lambda: The 2 a.m. File', mr: 'Lambda सह Serverless: रात्री 2 ची file' }, client: 'ChaiCart Cloud', domain: { en: 'AWS Lambda · S3 events, handlers, logs', mr: 'AWS Lambda · S3 events, handlers, logs' }, building: 'lambda', rank: 'Serverless Builder', level: 'intermediate', lessons: [...lambdaBasicsLessons, ...lambdaMoreLessons], available: true },
   { id: 'spark1', title: { en: 'PySpark: A Billion Chai Orders', mr: 'PySpark: अब्जावधी चहा ऑर्डर्स' }, client: 'ChaiCart Analytics', domain: { en: 'PySpark · DataFrames, joins, aggregations, partitions', mr: 'PySpark · DataFrames, joins, aggregations, partitions' }, building: 'spark', rank: 'Big Data Engineer', level: 'intermediate', lessons: [], available: false },
   { id: 'glue1', title: { en: 'Glue ETL: The Nightly Pipeline', mr: 'Glue ETL: रात्रीची pipeline' }, client: 'KisanMandi Cloud', domain: { en: 'AWS Glue · crawlers, catalog, jobs, bookmarks', mr: 'AWS Glue · crawlers, catalog, jobs, bookmarks' }, building: 'glue', rank: 'ETL Engineer', level: 'advanced', lessons: [], available: false },
   { id: 'dwh1', title: { en: 'The Warehouse: One Version of the Truth', mr: 'Warehouse: सत्याची एकच आवृत्ती' }, client: 'KisanMandi HQ', domain: { en: 'Data warehouse · star schema, SCD, incremental loads', mr: 'Data warehouse · star schema, SCD, incremental loads' }, building: 'dwh', rank: 'Data Engineer', level: 'advanced', lessons: [], available: false },
@@ -83,7 +88,7 @@ export const tracks: { id: TrackId; world: WorldId; title: T; blurb: T; acts: st
   { id: 'perf', world: 'qa', title: { en: 'Performance testing with k6', mr: 'k6 सह परफॉर्मन्स टेस्टिंग' }, blurb: { en: 'Send thousands of virtual users at a server and find where it breaks.', mr: 'server वर हजारो virtual users पाठवा आणि तो कुठे मोडतो ते शोधा.' }, acts: ['pf1', 'pf2'] },
   { id: 'dstart', world: 'data', title: { en: 'Start here', mr: 'इथून सुरुवात' }, blurb: { en: 'Your first day at Kestrel Data: what a data pipeline is.', mr: 'Kestrel Data मधला तुमचा पहिला दिवस: data pipeline म्हणजे काय.' }, acts: ['dprologue'] },
   { id: 'python', world: 'data', title: { en: 'Python for data', mr: 'डेटासाठी Python' }, blurb: { en: 'Real Python, from the first print() to cleaning messy files.', mr: 'खरं Python, पहिल्या print() पासून गोंधळलेल्या files साफ करण्यापर्यंत.' }, acts: ['py1', 'py2'] },
-  { id: 'cloud', world: 'data', title: { en: 'AWS for data: S3 and Lambda', mr: 'डेटासाठी AWS: S3 आणि Lambda' }, blurb: { en: 'Store files in a data lake and process them the moment they land.', mr: 'data lake मध्ये files ठेवा आणि त्या येताच त्यांच्यावर प्रक्रिया करा.' }, acts: ['lake1', 'lambda1'], soon: true },
+  { id: 'cloud', world: 'data', title: { en: 'AWS for data: S3 and Lambda', mr: 'डेटासाठी AWS: S3 आणि Lambda' }, blurb: { en: 'Store files in a data lake and process them the moment they land.', mr: 'data lake मध्ये files ठेवा आणि त्या येताच त्यांच्यावर प्रक्रिया करा.' }, acts: ['lake1', 'lambda1'] },
   { id: 'bigdata', world: 'data', title: { en: 'Big data with PySpark and Glue', mr: 'PySpark आणि Glue सह big data' }, blurb: { en: 'Transform millions of rows with Spark, and run it every night with AWS Glue.', mr: 'Spark ने लाखो rows बदला, आणि AWS Glue ने ते रोज रात्री चालवा.' }, acts: ['spark1', 'glue1'], soon: true },
   { id: 'warehouse', world: 'data', title: { en: 'Data warehouse', mr: 'Data warehouse' }, blurb: { en: 'Model facts and dimensions so every report tells the same truth.', mr: 'facts आणि dimensions असे मांडा की प्रत्येक रिपोर्ट एकच सत्य सांगेल.' }, acts: ['dwh1'], soon: true },
   { id: 'devsoon', world: 'dev', title: { en: 'Coming later', mr: 'नंतर येणार' }, blurb: { en: 'Software development, in the same story style.', mr: 'सॉफ्टवेअर डेव्हलपमेंट, याच गोष्टीच्या शैलीत.' }, acts: ['dev1'], soon: true },
@@ -192,4 +197,5 @@ export const incidents: Incident[] = [
   ...selIncidents,
   ...pwIncidents,
   ...pfIncidents,
+  ...dataIncidents,
 ]

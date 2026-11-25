@@ -99,11 +99,17 @@ Switch worlds with the tabs in the top bar; each world has its own map, prologue
 | Start here | Kestrel Data | What a data engineer does (pipelines, lakes, ETL, warehouses), your first Python program |
 | Python 1 Foundations | ChaiCart | Values and f-strings, lists and loops, if and bad orders, dictionaries, functions with assert, boss "The Messy Order Book" |
 | Python 2 Real Data | KisanMandi | Files and CSV, JSON, errors and quarantined rows, cleaning, grouping and summarising, boss "The Mandi Files" (a mini ETL) |
-| Coming next | ChaiCart Cloud, KisanMandi | S3 data lake and boto3, Lambda on S3 events, PySpark DataFrames, Glue ETL jobs, data warehouse modelling |
+| S3 Data Lake | ChaiCart Cloud | Cloud storage and first bucket, keys/prefixes/pagination, data lake design (zones, Hive partitions, Parquet), security (IAM, bucket policies, Block Public Access, encryption, presigned URLs), versioning/storage classes/lifecycle, boss "The Lake of Receipts" |
+| Serverless with Lambda | ChaiCart Cloud | First Lambda (handler, event, context, logs, limits), S3 events trigger Lambda, errors/retries/idempotency, configuration and performance (env vars, memory, cold starts, concurrency, IAM role), boss "The 2 a.m. File" |
+| Coming next | ChaiCart Analytics, KisanMandi | PySpark DataFrames, Glue ETL jobs, data warehouse modelling |
 
 The Python lab runs real Python 3.14 in the browser (Pyodide, served from this app so it works offline) inside a background worker, so an endless loop is stopped after 10 seconds instead of freezing the page. Data files appear above the editor. Submit checks the printed output and hidden checks on her variables, then re-runs the same code on hidden data sets (an empty row, a new market, a duplicate) so only general, robust code passes.
 
-Incident files: TSB 2018 (SQL), Optus 2022 (API), HealthCare.gov 2013 (Selenium), plus one each for Playwright and performance, each with an animated replay, then "rewind and catch it".
+For the AWS chapters the lab also simulates an AWS account (`src/python/aws.ts`): real `boto3` code runs against an in-memory S3 (buckets, keys, listing and paginators, versioning and delete markers, lifecycle, bucket policies, Block Public Access, encryption, presigned URLs, event notifications) with AWS's real error codes, and a Lambda runtime that invokes her `lambda_handler(event, context)` with real-shaped S3 events and writes CloudWatch-style logs (cold and warm starts, billed duration, timeouts, async retries, on-failure destinations, recursive loop detection). An AWS console panel under the output shows the buckets as a folder tree, the Lambda logs and every API call.
+
+**Interview corner:** every S3 and Lambda level ends with 7 or 8 interview questions and model answers (bilingual, AWS facts checked against AWS documentation as of November 2026). The Journal's **Interview prep** tab collects every answer from finished levels, with search, for revision before an interview.
+
+Incident files: TSB 2018 (SQL), Optus 2022 (API), HealthCare.gov 2013 (Selenium), Citibank 2020 (Playwright), Ticketmaster 2022 (performance) and Capital One 2019 (S3 and IAM), each with an animated replay, then "rewind and catch it".
 
 ## Look and feel
 
@@ -122,8 +128,8 @@ Every story moment plays on an illustrated background matching the topic (shop, 
 - `src/selenium/`: the CareBridge app (`app.ts`), the Java interpreter (`java.ts`), the WebDriver look-alike and TestNG runner (`runner.ts`) and grading (`grade.ts`).
 - `src/playwright/`: the SkyHop site and backend (`app.ts`), the Playwright look-alike and test runner (`runner.ts`) and grading (`grade.ts`).
 - `src/perf/`: the StageDoor server model (`server.ts`), the k6 look-alike and simulator (`k6.ts`) and grading (`grade.ts`).
-- `src/python/`: the Pyodide harness (`harness.ts`), the browser worker and client (`worker.ts`, `client.ts`) and grading (`grade.ts`).
-- `src/content/sql*.ts`, `api*.ts`, `sel*.ts`, `pw*.ts`, `pf*.ts`, `de*.ts`, `py*.ts`: all lessons as bilingual data (`{ en, mr }`).
+- `src/python/`: the Pyodide harness (`harness.ts`), the simulated AWS account (`aws.ts`), the browser worker and client (`worker.ts`, `client.ts`) and grading (`grade.ts`).
+- `src/content/sql*.ts`, `api*.ts`, `sel*.ts`, `pw*.ts`, `pf*.ts`, `de*.ts`, `py*.ts`, `s3*.ts`, `lambda*.ts`: all lessons as bilingual data (`{ en, mr }`).
 - `npm run check:content` (or `-- --only=pw1-,pf` for some lessons): runs every expected SQL answer, request, Postman test, Selenium script, Playwright spec (in jsdom), k6 script and Python program (in Pyodide), and checks every story number, exam answer and that every text has both languages.
 
 Progress is saved in the browser's localStorage. The `मराठी` button in the top bar hides or shows Marathi.

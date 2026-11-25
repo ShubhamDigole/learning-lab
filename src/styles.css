@@ -1075,3 +1075,52 @@ main { max-width: 1180px; margin: 0 auto; padding-block: 8px 64px; }
 .py-out { margin: 0; padding: 8px 12px; font-family: var(--f-mono); font-size: 0.82rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 300px; overflow-y: auto; color: var(--code-ink); min-height: 3em; }
 .py-out .bad { color: #ff9d92; }
 .py-out .muted { color: var(--code-dim); }
+
+/* ---------- AWS console (Python lab) ---------- */
+.aws-console { border: 1.5px solid #232f3e; border-radius: 10px; overflow: hidden; background: var(--panel); }
+.aws-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 6px 10px; background: #232f3e; color: #fff; font-size: 0.82rem; }
+.aws-head .l-mr { color: #d5dbe3; }
+.aws-tabs { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.aws-tabs button { border: 1px solid #56657a; background: transparent; color: #d5dbe3; border-radius: 6px; padding: 2px 9px; font: inherit; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+.aws-tabs button.on { background: #ff9900; border-color: #ff9900; color: #232f3e; }
+.aws-tabs button .l-mr { color: inherit; }
+.aws-body { padding: 8px 10px; max-height: 340px; overflow: auto; display: grid; gap: 8px; }
+.s3-bucket { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.s3-bucket-head { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; padding: 5px 8px; background: var(--panel-2); font-size: 0.82rem; }
+.s3-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.s3-tag { font-size: 0.68rem; font-weight: 700; padding: 0 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.s3-tag.on { border-color: var(--pass); color: var(--pass); }
+.s3-tag.warn { border-color: #e0a400; color: #b07d00; }
+.s3-tag.trig { border-color: #ff9900; color: #b56b00; }
+.s3-tree { font-size: 0.8rem; }
+.s3-row { display: flex; gap: 6px; align-items: center; padding: 2px 8px; border-top: 1px solid var(--line); }
+.s3-row.deleted .s3-name { text-decoration: line-through; color: var(--ink-2); }
+.s3-name { overflow-wrap: anywhere; }
+.s3-meta { margin-left: auto; display: flex; gap: 4px; align-items: center; color: var(--ink-2); font-size: 0.72rem; white-space: nowrap; }
+.s3-class { background: var(--warn-soft); border-radius: 4px; padding: 0 5px; }
+.lambda-inv { border: 1px solid var(--line); border-left: 4px solid var(--pass); border-radius: 8px; overflow: hidden; }
+.lambda-inv.bad { border-left-color: var(--bug); }
+.lambda-inv-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 8px; background: var(--panel-2); font-size: 0.78rem; }
+.lambda-logs, .lambda-result { margin: 0; padding: 6px 10px; background: var(--code-bg); color: var(--code-ink); font-family: var(--f-mono); font-size: 0.72rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lambda-result { color: #9be2b9; border-top: 1px solid #2a3550; }
+.aws-calls { margin: 0; padding-left: 1.6em; font-size: 0.76rem; line-height: 1.6; }
+
+/* ---------- interview corner ---------- */
+.interview { display: grid; gap: 8px; margin-top: 16px; text-align: left; }
+.interview h3 { display: flex; gap: 8px; align-items: center; font-size: var(--step-1); }
+.iv-item { border: 1.5px solid var(--line); border-radius: 10px; background: var(--panel); overflow: hidden; }
+.iv-item summary { cursor: pointer; padding: 8px 12px; font-weight: 700; display: grid; gap: 2px; list-style: none; }
+.iv-item summary::-webkit-details-marker { display: none; }
+.iv-item summary { position: relative; padding-left: 30px; }
+.iv-item summary::before { content: '▸'; position: absolute; left: 12px; top: 8px; transition: transform 0.15s; }
+.iv-item[open] summary::before { transform: rotate(90deg); }
+.iv-item[open] summary { border-bottom: 1px solid var(--line); background: var(--panel-2); }
+.iv-answer { padding: 8px 14px 12px; display: grid; gap: 6px; white-space: pre-line; }
+
+.journal-tabs { display: flex; gap: 6px; margin: 4px 0 10px; flex-wrap: wrap; }
+.journal-tabs button { border: 1.5px solid var(--line); background: var(--panel); border-radius: 99px; padding: 4px 14px; font: inherit; font-weight: 800; color: var(--ink-2); cursor: pointer; }
+.journal-tabs button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.journal-tabs button .l-mr { color: inherit; opacity: 0.8; }
+.iv-search input { width: 100%; max-width: 420px; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; background: var(--panel); color: var(--ink); }
+.interview-prep { display: grid; gap: 12px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
